@@ -2,7 +2,11 @@ import defaultTheme from 'tailwindcss/defaultTheme';
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  content: [
+    './index.html',
+    './src/**/*.{js,jsx,ts,tsx}',
+    './src/**/**/*.{js,jsx}' // Recursively scan nested folders
+  ],
   darkMode: 'class',
   theme: {
     fontFamily: {
