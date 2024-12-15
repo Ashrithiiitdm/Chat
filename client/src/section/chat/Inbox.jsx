@@ -25,6 +25,20 @@ export default function MsgInbox() {
 
             {/**Displaying messages */}
             <div className='max-h-full space-y-3.5 overflow-auto no-scrollbar px-6 py-7.5 grow'>
+                <div className='max-w-125'>
+                    <p className='mb-2.5 text-sm font-medium'>Ash</p>
+                    <div className='mb-2.5 rounded-2xl rounded-tl-none bg-gray px-5 py-3 dark:bg-boxdark-2'>
+                        <p>Manchidi raww...</p>
+                    </div>
+                    <p className='text-sm'>1:55pm</p>
+                </div>
+
+                <div className='max-w-125 ml-auto'>
+                    <div className='mb-2.5 rounded-2xl rounded-br-none bg-primary px-5 py-3 dark:bg-boxdark-2'>
+                        <p className='text-white'>Manchidi kAAdu rAA...</p>
+                    </div>
+                    <p className='text-sm'>2:00pm</p>
+                </div>
 
             </div>
 
