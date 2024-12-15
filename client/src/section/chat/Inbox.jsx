@@ -2,6 +2,8 @@ import React from "react";
 import User01 from '../../images/user-01.png';
 import { DotsThree, LinkSimple, PaperPlaneTilt, Smiley } from "@phosphor-icons/react";
 import DropDown from "../../components/DropDown";
+import EmojiPicker from "../../components/EmojiPicker";
+import MediaPicker from "../../components/MediaPicker";
 
 export default function MsgInbox() {
     return (
@@ -98,10 +100,10 @@ export default function MsgInbox() {
                         </input>
                         <div className='absolute right-5 top-1/2 -translate-y-1/2 items-center justify-end space-x-4'>
                             <button className='hover:text-primary'>
-                                <LinkSimple size={20} />
+                                <MediaPicker />
                             </button>
                             <button className='hover:text-primary'>
-                                <Smiley size={20} />
+                                <EmojiPicker />
                             </button>
                         </div>
                     </div>

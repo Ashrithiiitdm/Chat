@@ -2,8 +2,8 @@ import React from "react";
 
 export default function Verification() {
     return (
-        <div className="flex items-center justify-center min-h-screen bg-boxdark text-white">
-            <div className="w-full max-w-md p-8 bg-gray-800 rounded-lg shadow-md">
+        <div className="flex items-center justify-center min-h-screen  text-white">
+            <div className="w-full max-w-md p-8 bg-boxdark rounded-lg shadow-md">
                 <h2 className="text-3xl font-bold text-center mb-4">Verification</h2>
                 <p className="text-gray-400 text-center mb-6">
                     Enter the verification code sent to your email
@@ -17,8 +17,8 @@ export default function Verification() {
                     <input
                         id="code"
                         type="text"
-                        placeholder="123456"
-                        className="w-full px-4 py-2 text-gray-900 rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Enter code"
+                        className="w-full px-4 py-2 text-strokedark rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                 </div>
 
@@ -36,6 +36,9 @@ export default function Verification() {
                         </button>
                     </p>
                 </div>
+                <span className='mt-5 block text-red text-center'>
+                    Don't share this code with anyone
+                </span>
             </div>
         </div>
     );
