@@ -1,5 +1,5 @@
 import { MagnifyingGlass } from "@phosphor-icons/react";
-import React from "react";
+import React, { useState } from "react";
 import User01 from '../../images/user-01.png';
 
 const List = [
@@ -55,6 +55,9 @@ const List = [
 
 
 export default function ChatList() {
+
+    const [selected, setSelected] = useState(0);
+
     return (
         <div className='h-full flex-col x1:flex x1:w-1/4'>
             <div className='sticky border-b border-stroke dark:border-strokedark px-6 py-7.5 flex flex-row'>
@@ -76,8 +79,10 @@ export default function ChatList() {
                 <div className='no-scrollbar overflow-auto max-h-full space-y-2.5'>
                     {/** This part is for the message overview */}
                     {List.map((obj, item) => {
-                        return <div className="flex cursor-pointer items-center rounded px-4 py-2 hover:bg-gray-2 
-                        dark:hover:bg-strokedark" key={item}>
+                        return <div className={`flex cursor-pointer items-center rounded px-4 py-2 hover:bg-gray-2 dark:hover:bg-strokedark ${selected === item ? 'bg-gray dark:bg-boxdark-2' : 'hover:bg-gray-2 dark:hover:bg-boxdark-2/90'}`}
+                            key={item}
+                            onClick={() => { setSelected(item); }}
+                        >
                             <div className='relative mr-3.5 h-11 w-full max-w-11 rounded-full'>
                                 <img src={obj.imgSrc} alt='Profile' className='h-full w-full rounded-full object-cover object-center'></img>
                                 {/**Span part is for the green online symbol */}
@@ -92,7 +97,7 @@ export default function ChatList() {
                     })}
                 </div>
             </div>
-        </div>
+        </div >
 
     )
 }
