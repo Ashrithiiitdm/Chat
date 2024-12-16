@@ -5,7 +5,7 @@ import DropDown from "../../components/DropDown";
 import EmojiPicker from "../../components/EmojiPicker";
 import MediaPicker from "../../components/MediaPicker";
 import UserInfo from "./UserInfo";
-import Gifs from "../../components/Giphy";
+
 
 export default function MsgInbox() {
     const [userInfo, setUserInfo] = useState(false);
@@ -126,7 +126,6 @@ export default function MsgInbox() {
                             <PaperPlaneTilt size={24} weight='bold' />
                         </button>
                     </form>
-                    <Gifs />
                 </div>
             </div>
 
