@@ -1,6 +1,5 @@
 import { combineReducers } from '@reduxjs/toolkit';
-import storage from 'redux-persist/lib/storage/index.js'; // Explicit import path
-
+import storage from 'redux-persist/lib/storage'; // Explicit import path
 import appReducer from './slices/app';
 
 const rootPersistConfig = {

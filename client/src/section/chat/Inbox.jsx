@@ -1,17 +1,25 @@
 import React, { useState } from "react";
 import User01 from '../../images/user-01.png';
-import { PaperPlaneTilt, Phone, VideoCamera } from "@phosphor-icons/react";
+import { Microphone, PaperPlaneTilt, Phone, VideoCamera } from "@phosphor-icons/react";
 import DropDown from "../../components/DropDown";
 import EmojiPicker from "../../components/EmojiPicker";
-import MediaPicker from "../../components/MediaPicker";
 import UserInfo from "./UserInfo";
-
+import { useDispatch } from "react-redux";
+import { ToggleAudioModal } from "../../state/slices/app";
+import Attacher from "../../components/FileAttacher";
+import Separator from "../../components/Sep";
 
 export default function MsgInbox() {
+    const dispatch = useDispatch();
     const [userInfo, setUserInfo] = useState(false);
 
     const handleToggle = () => {
         setUserInfo((prev) => !prev);
+    }
+
+    const handleMic = (e) => {
+        e.preventDefault();
+        dispatch(ToggleAudioModal(true));
     }
 
     return (
@@ -65,7 +73,7 @@ export default function MsgInbox() {
                         </div>
                         <p className='text-sm'>1:55pm</p>
                     </div>
-
+                    <Separator />
                     <div className='max-w-100 ml-auto'>
                         <div className='mb-2.5 rounded-2xl rounded-br-none bg-primary px-5 py-3'>
                             <p className='text-white'>Manchidi kAAdu rAA...</p>
@@ -79,7 +87,7 @@ export default function MsgInbox() {
                         </div>
                         <p className='text-sm'>1:55pm</p>
                     </div>
-
+                    <Separator />
                     <div className='max-w-100 ml-auto'>
                         <div className='mb-2.5 rounded-2xl rounded-br-none bg-primary px-5 py-3'>
                             <p className='text-white'>Manchidi kAAdu rAA...</p>
@@ -93,7 +101,7 @@ export default function MsgInbox() {
                         </div>
                         <p className='text-sm'>1:55pm</p>
                     </div>
-
+                    <Separator />
                     <div className='max-w-100 ml-auto'>
                         <div className='mb-2.5 rounded-2xl rounded-br-none bg-primary px-5 py-3'>
                             <p className='text-white'>Manchidi kAAdu rAA...</p>
@@ -114,11 +122,15 @@ export default function MsgInbox() {
                             text-black placholder-body outline-none focus:border-primary dark:border-strokedark dark:bg-boxdark-2 dark:text-white'>
                             </input>
                             <div className='absolute right-5 top-1/2 -translate-y-1/2 items-center justify-end space-x-4'>
-                                <button className='hover:text-primary'>
-                                    <MediaPicker />
+                                <button
+                                    className='hover:text-primary'>
+                                    <Attacher />
                                 </button>
                                 <button className='hover:text-primary'>
                                     <EmojiPicker />
+                                </button>
+                                <button className='hover:text-primary'>
+                                    <Microphone onClick={handleMic} />
                                 </button>
                             </div>
                         </div>
