@@ -8,6 +8,7 @@ import { useDispatch } from "react-redux";
 import { ToggleAudioModal } from "../../state/slices/app";
 import Attacher from "../../components/FileAttacher";
 import Separator from "../../components/Sep";
+import { Document, Audio, VideoImg } from "../../components/Msgs/export";
 
 export default function MsgInbox() {
     const dispatch = useDispatch();
@@ -74,6 +75,8 @@ export default function MsgInbox() {
                         <p className='text-sm'>1:55pm</p>
                     </div>
                     <Separator />
+                    <Document writer="Ash" incoming={false} status='read' time='4:32pm' />
+                    <Audio incoming={false} status='delivered' time='4:32pm' />
                     <div className='max-w-100 ml-auto'>
                         <div className='mb-2.5 rounded-2xl rounded-br-none bg-primary px-5 py-3'>
                             <p className='text-white'>Manchidi kAAdu rAA...</p>
@@ -88,6 +91,7 @@ export default function MsgInbox() {
                         <p className='text-sm'>1:55pm</p>
                     </div>
                     <Separator />
+                    <VideoImg writer="Ash" incoming={false} status='read' time='4:32pm' />
                     <div className='max-w-100 ml-auto'>
                         <div className='mb-2.5 rounded-2xl rounded-br-none bg-primary px-5 py-3'>
                             <p className='text-white'>Manchidi kAAdu rAA...</p>
