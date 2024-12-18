@@ -1,6 +1,8 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Verification() {
+    const navigate = useNavigate();
     return (
         <div className="flex items-center justify-center min-h-screen  text-white">
             <div className="w-full max-w-md p-8 bg-boxdark rounded-lg shadow-md">
@@ -23,7 +25,7 @@ export default function Verification() {
                 </div>
 
                 {/* Button */}
-                <button className="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2 rounded-md transition">
+                <button onClick={() => { navigate('/dashboard'); }} className="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2 rounded-md transition">
                     Verify
                 </button>
 

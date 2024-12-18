@@ -1,8 +1,10 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 
 export default function SignUp() {
+    const navigate = useNavigate();
+
     return (
         <div className="flex items-center justify-center h-screen bg-stroke">
             {/* Login Card */}
@@ -16,7 +18,9 @@ export default function SignUp() {
                 </p>
                 {/* Social Login */}
                 <div className="space-y-4">
-                    <button className="w-full flex items-center justify-center gap-2 border border-stroke rounded-md py-2 hover:bg-stroke transition">
+                    <button
+                        onClick={() => { navigate("/dashboard"); }}
+                        className="w-full flex items-center justify-center gap-2 border border-stroke rounded-md py-2 hover:bg-stroke transition">
                         <span className="mr-2 text-xl text-red-500">
                             <svg
                                 width="20"
@@ -126,6 +130,7 @@ export default function SignUp() {
                     </div>
                     {/* Submit Button */}
                     <button
+                        onClick={() => { navigate("/auth/verify"); }}
                         type="submit"
                         className="w-full flex items-center justify-center gap-2 border border-primary bg-primary text-white rounded-md py-2 hover:bg-opacity-90 transition"
                     >
