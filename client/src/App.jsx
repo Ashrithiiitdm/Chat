@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Messages from './pages/Messages';
 import LoginPage from './pages/auth/Login';
@@ -9,17 +9,7 @@ import Layout from './paths';
 
 
 export default function App() {
-  useEffect(() => {
-    const colorMode = JSON.parse(localStorage.getItem('color-mode'));
-    const className = 'dark';
-    const body = window.document.body.classList;
-    if (colorMode) {
-      body.add(className);
-    } else {
-      body.remove(className);
-    }
 
-  }, []);
   return (
     <Routes>
       <Route path='/' element={<Navigate to='/auth/login' />} />

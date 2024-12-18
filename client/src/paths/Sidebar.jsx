@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
     Chat,
+    ChatTeardrop,
     SignOut,
     UserCircle,
 } from '@phosphor-icons/react';
@@ -36,6 +37,7 @@ export default function Sidebar() {
     return (
         <div className="flex flex-col border-r border-stroke p-2 dark:border-strokedark">
             <div className="flex flex-col items-center space-y-5">
+                <ChatTeardrop size={24} className='text-primary' />
                 {Icons.map((icon) => (
                     <div
                         key={icon.key}
@@ -48,8 +50,9 @@ export default function Sidebar() {
                         </div>
                         <span className={`font-medium text-sm ${selected === icon.key && 'text-primary'}`}>{icon.title}</span>
                     </div>
-                ))}
-            </div>
+                ))
+                }
+            </div >
 
             <div className="flex flex-col grow"></div>
             <div className="space-y-4.5">
@@ -57,10 +60,10 @@ export default function Sidebar() {
                     <DarkMode />
                 </div>
 
-                <div className="flex flex-row items-center justify-center border rounded-md border-stroke p-2 dark:border-strokedark hover:bg-stone-100 hover:cursor-pointer">
+                <button onClick={() => { navigate('/'); }} className="flex flex-row items-center justify-center border rounded-md border-stroke p-2 dark:border-strokedark hover:bg-stone-100 hover:cursor-pointer">
                     <SignOut size={24} />
-                </div>
+                </button>
             </div>
-        </div>
+        </div >
     );
 }
