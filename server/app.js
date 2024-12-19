@@ -6,20 +6,21 @@ import xss from 'xss-clean';
 
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import session from 'express-session';
+
 import bodyParser from 'body-parser';
 
 // Create a new express application
 const app = express();
 
 //Using middlewares.
-app.use({
-    cors: {
+app.use(
+    cors({
         origin: '*',
         methods: ['GET', 'PATCH', 'POST', 'PUT', 'DELETE'],
         credentials: true,
-    },
-})
+    })
+);
+
 app.use(express.json({ limit: '10kb' }));
 app.use(cookieParser());
 app.use(bodyParser.json({}));
@@ -41,4 +42,4 @@ app.use(express.urlencoded({
 app.use(xss());
 
 //Export the express-application.
-module.exports = app;
+export default app;
