@@ -19,6 +19,22 @@
         display: none;
     }
 
+    input:-webkit-autofill {
+        -webkit-box-shadow: 0 0 0px 1000px #f8fafc inset !important;
+        /* Default for light mode */
+        box-shadow: 0 0 0px 1000px #f8fafc inset !important;
+        -webkit-text-fill-color: #1e293b !important;
+        /* Dark text for light mode */
+    }
+
+    /* Autofill for dark mode with Tailwind's `dark:` */
+    .dark input:-webkit-autofill {
+        -webkit-box-shadow: 0 0 0px 1000px #1e293b inset !important;
+        box-shadow: 0 0 0px 1000px #1e293b inset !important;
+        -webkit-text-fill-color: #f8fafc !important;
+        /* Light text for dark mode */
+    }
+
     .no-scrollbar {
         -ms-overflow-style: none;
         /* IE and Edge */
