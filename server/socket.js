@@ -18,12 +18,33 @@ const regSocket = (server) => {
         console.log(socket.user);
 
         //I should handle new connections.
+
+        socket.on("newConnection", () => {
+            console.log("New connection");
+        });
+        //I should Handle new messages
+
+        socket.on("newMessage", (message) => {
+            console.log(message);
+        });
+
+        //I should Handle disconnections
+
+        socket.on("disconnect", () => {
+            console.log("User disconnected");
+        });
+
+
+        //I should handle chat history
+        socket.on("chatHistory", () => {
+            console.log("Chat history requested");
+
+        });
+        //
+
     });
 
-    setInterval(() => {
-        //I should emit online users here.
 
-    }, [1000 * 8]);
 };
 
 export default regSocket;

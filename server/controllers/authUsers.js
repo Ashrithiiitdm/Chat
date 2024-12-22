@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import pool from '../server.js';
 import { promisify } from 'util';
+import { sendMail } from '../mailer.js';
 
 
 const signToken = (user_id) => {
@@ -62,6 +63,12 @@ export const sendOtp = catchAsync(async (req, res, next) => {
     const expiry_time = Date.now() + 10 * 60 * 1000;
     const user = await pool.query('UPDATE Users SET otp = $1, otp_expiry = $2 WHERE user_id = $3 RETURNING *', [hashedOtp, expiry_time, user_id]);
 
+    sendMail({
+        name: user.rows[0].user_name,
+        otp,
+        email: user.rows[0].email,
+    });
+
     return res.status(200).json({
         status: 'success',
         message: 'OTP sent successfully',
@@ -92,6 +99,13 @@ export const resendOtp = catchAsync(async (req, res, next) => {
     const expiry_time = Date.now() + 10 * 60 * 1000;
 
     await pool.query('UPDATE Users SET otp = $1, otp_expiry = $2 WHERE email = $3', [hashedOtp, expiry_time, email]);
+
+
+    sendMail({
+        name: user[0].user_name,
+        otp,
+        email,
+    });
 
     res.status(200).json({
         status: 'success',

@@ -1,4 +1,6 @@
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const verifyToken = (socket, next) => {
     const token = socket.handshake.auth.token;
