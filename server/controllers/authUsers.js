@@ -12,7 +12,7 @@ const signToken = (user_id) => {
 }
 
 // register new users
-const regUser = catchAsync(async (req, res, next) => {
+export const regUser = catchAsync(async (req, res, next) => {
     const { name, email, password } = req.body;
     name = validator.trim(name);
     email = validator.isEmail(email);
@@ -29,7 +29,6 @@ const regUser = catchAsync(async (req, res, next) => {
     const hashedPassword = await bcrypt.hash(password, 12);
 
     if (existingUser.rows.length) {
-        let newUser;
         if (existingUser.rows[0].verified) {
             //email already exists
             return res.status(400).json({
@@ -50,7 +49,7 @@ const regUser = catchAsync(async (req, res, next) => {
 
 //send otp
 
-const sendOtp = catchAsync(async (req, res, next) => {
+export const sendOtp = catchAsync(async (req, res, next) => {
     const { user_id } = req.body;
     const otp = otpGenerator.generate(6, {
         upperCaseAlphabets: false,
@@ -71,7 +70,7 @@ const sendOtp = catchAsync(async (req, res, next) => {
 });
 
 //resend-otp
-const resendOtp = catchAsync(async (req, res, next) => {
+export const resendOtp = catchAsync(async (req, res, next) => {
     const { email } = req.body;
     const user = (await pool.query('SELECT user_id FROM Users WHERE email = $1', [email])).rows;
 
@@ -106,7 +105,7 @@ const resendOtp = catchAsync(async (req, res, next) => {
 
 //verify otp
 
-const verifyOtp = catchAsync(async (req, res, next) => {
+export const verifyOtp = catchAsync(async (req, res, next) => {
     const { email, otp } = req.body;
     const user = await pool.query('SELECT * FROM Users WHERE email = $1 AND otp_expiry > $2', [email, Date.now()]);
 
@@ -147,7 +146,7 @@ const verifyOtp = catchAsync(async (req, res, next) => {
 });
 
 //login
-const loginUser = catchAsync(async (req, res, next) => {
+export const loginUser = catchAsync(async (req, res, next) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -193,7 +192,7 @@ const loginUser = catchAsync(async (req, res, next) => {
 //Auth
 
 
-const auth = catchAsync(async (req, res, next) => {
+export const auth = catchAsync(async (req, res, next) => {
     try {
         let token;
 

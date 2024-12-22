@@ -8,6 +8,8 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
 import bodyParser from 'body-parser';
+import routes from './routes/index.js';
+
 
 // Create a new express application
 const app = express();
@@ -40,6 +42,8 @@ app.use(express.urlencoded({
     extended: true
 }));
 app.use(xss());
+
+app.use(routes)
 
 //Export the express-application.
 export default app;
