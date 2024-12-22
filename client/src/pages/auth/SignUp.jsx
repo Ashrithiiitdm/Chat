@@ -1,9 +1,43 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import * as yup from "yup";
+import { useForm } from "react-hook-form";
+import { yupResolver } from '@hookform/resolvers/yup';
+import 'react-toastify/dist/ReactToastify.css';
+import { RegisterUser } from "../../state/slices/auth";
+
+
+//Checking valid data
+const schema = yup.object().shape({
+    name: yup.string().required('Name is required').trim(),
+    email: yup.string().email('Please enter a valid email').required('Email is required'),
+    password: yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
+    confirmPassword: yup.string().oneOf([yup.ref('password')], 'Passwords must match').required('Please confirm your password'),
+
+});
 
 
 export default function SignUp() {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
+        resolver: yupResolver(schema),
+        defaultValues: {
+            name: '',
+            email: '',
+            password: '',
+            confirmPassword: '',
+        },
+
+    });
+
+    const onSubmit = async (data) => {
+        console.log(data, 'form data for signup');
+        dispatch(RegisterUser(data));
+    };
 
     return (
         <div className="flex items-center justify-center h-screen bg-stroke">
@@ -65,7 +99,7 @@ export default function SignUp() {
                     <div className="w-full h-[1px] bg-stroke"></div>
                 </div>
                 {/* Form */}
-                <form className="space-y-4">
+                <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
                     {/* Full Name */}
                     <div>
                         <label
@@ -76,10 +110,12 @@ export default function SignUp() {
                         </label>
                         <input
                             type="text"
+                            {...register('name')}
                             id="name"
-                            className="w-full p-2 bg-stroke text-boxdark-2 rounded-md focus:ring-2 focus:ring-gray-2"
+                            className={`w-full p-2 bg-stroke text-boxdark-2 rounded-md focus:ring-2 focus:ring-gray-2 ${errors.name ? 'border-red focus:border-red' : 'border-stroke'}`}
                             placeholder="Enter your full name"
                         />
+                        {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
                     </div>
                     {/* Email */}
                     <div>
@@ -91,10 +127,12 @@ export default function SignUp() {
                         </label>
                         <input
                             type="email"
+                            {...register('email')}
                             id="email"
-                            className="w-full p-2 bg-stroke text-boxdark-2 rounded-md focus:ring-2 focus:ring-gray-2"
+                            className={`w-full p-2 bg-stroke text-boxdark-2 rounded-md focus:ring-2 focus:ring-gray-2 ${errors.email ? 'border-red focus:border-red' : 'border-stroke'}`}
                             placeholder="Enter your email"
                         />
+                        {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
                     </div>
 
                     {/* Password */}
@@ -107,10 +145,12 @@ export default function SignUp() {
                         </label>
                         <input
                             type="password"
+                            {...register('password')}
                             id="password"
-                            className="w-full p-2 bg-stroke text-boxdark-2 rounded-md focus:ring-2 focus:ring-gray-2"
+                            className={`w-full p-2 bg-stroke text-boxdark-2 rounded-md focus:ring-2 focus:ring-gray-2 ${errors.password ? 'border-red focus:border-red' : 'border-stroke'}`}
                             placeholder="Enter your password"
                         />
+                        {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
                     </div>
 
                     {/* Re-type password */}
@@ -123,14 +163,15 @@ export default function SignUp() {
                         </label>
                         <input
                             type="password"
+                            {...register('confirmPassword')}
                             id="password"
-                            className="w-full p-2 bg-stroke text-boxdark-2 rounded-md focus:ring-2 focus:ring-gray-2"
+                            className={`w-full p-2 bg-stroke text-boxdark-2 rounded-md focus:ring-2 focus:ring-gray-2 ${errors.confirmPassword ? 'border-red focus:border-red' : 'border-stroke'}`}
                             placeholder="Re-type your password"
                         />
+                        {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>}
                     </div>
                     {/* Submit Button */}
                     <button
-                        onClick={() => { navigate("/auth/verify"); }}
                         type="submit"
                         className="w-full flex items-center justify-center gap-2 border border-primary bg-primary text-white rounded-md py-2 hover:bg-opacity-90 transition"
                     >

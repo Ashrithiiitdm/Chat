@@ -1,5 +1,9 @@
 import { Server } from "socket.io";
 import authSocket from "./middleware/authSocket.js";
+import { newConnection } from "./socketHandlers/newConnection.js";
+import { disconnectHandler } from "./socketHandlers/disconnection.js";
+import { getMessages } from "./socketHandlers/getMessage.js";
+import { newMessage } from "./socketHandlers/newMessage.js";
 
 const regSocket = (server) => {
     const io = new Server(server, {
@@ -20,24 +24,24 @@ const regSocket = (server) => {
         //I should handle new connections.
 
         socket.on("newConnection", () => {
-            console.log("New connection");
+            newConnection(socket, io);
         });
         //I should Handle new messages
 
         socket.on("newMessage", (message) => {
-            console.log(message);
+            newMessage(socket, message, io);
         });
 
         //I should Handle disconnections
 
         socket.on("disconnect", () => {
-            console.log("User disconnected");
+            disconnectHandler(socket);
         });
 
 
         //I should handle chat history
-        socket.on("chatHistory", () => {
-            console.log("Chat history requested");
+        socket.on("chatHistory", (data) => {
+            getMessages(socket, data);
 
         });
         //

@@ -15,17 +15,17 @@ const signToken = (user_id) => {
 // register new users
 export const regUser = catchAsync(async (req, res, next) => {
     const { name, email, password } = req.body;
-    name = validator.trim(name);
-    email = validator.isEmail(email);
+    const Name = validator.trim(name);
+    const Email = validator.isEmail(email);
 
-    if (email === null) {
+    if (Email === null) {
         return res.status(400).json({
             status: 'fail',
             message: 'Invalid email',
         });
     }
 
-    const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    const existingUser = await pool.query('SELECT * FROM Users WHERE email = $1', [Email]);
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
@@ -39,12 +39,12 @@ export const regUser = catchAsync(async (req, res, next) => {
         }
         else {
             //rewrite create new user.
-            await pool.query('DELETE FROM users WHERE email = $1', [email]);
+            await pool.query('DELETE FROM Users WHERE email = $1', [Email]);
         }
     }
 
     //register a new User
-    newUser = await pool.query('INSERT INTO users (user_name, email, user_pass) VALUES ($1, $2, $3) RETURNING *', [name, email, hashedPassword]);
+    await pool.query('INSERT INTO Users (user_name, email, user_pass) VALUES ($1, $2, $3) RETURNING *', [Name, Email, hashedPassword]);
     next();
 });
 
@@ -60,8 +60,12 @@ export const sendOtp = catchAsync(async (req, res, next) => {
 
     const hashedOtp = await bcrypt.hash(otp.toString(), 12);
 
-    const expiry_time = Date.now() + 10 * 60 * 1000;
+    // Option 1: Use Unix timestamp in seconds
+    const expiry_time = new Date(Date.now() + 10 * 60 * 1000);
+
     const user = await pool.query('UPDATE Users SET otp = $1, otp_expiry = $2 WHERE user_id = $3 RETURNING *', [hashedOtp, expiry_time, user_id]);
+
+    console.log(user.rows)
 
     sendMail({
         name: user.rows[0].user_name,
@@ -73,7 +77,6 @@ export const sendOtp = catchAsync(async (req, res, next) => {
         status: 'success',
         message: 'OTP sent successfully',
     });
-
 });
 
 //resend-otp
@@ -96,7 +99,8 @@ export const resendOtp = catchAsync(async (req, res, next) => {
 
     const hashedOtp = await bcrypt.hash(otp.toString(), 12);
 
-    const expiry_time = Date.now() + 10 * 60 * 1000;
+    const expiry_time = Math.floor(Date.now() / 1000) + 10 * 60; // expiry in seconds
+
 
     await pool.query('UPDATE Users SET otp = $1, otp_expiry = $2 WHERE email = $3', [hashedOtp, expiry_time, email]);
 

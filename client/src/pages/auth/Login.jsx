@@ -1,9 +1,44 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
+import * as yup from "yup";
+import { useForm } from "react-hook-form";
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useDispatch, useSelector } from "react-redux";
+import { LoginUser } from "../../state/slices/auth";
+import 'react-toastify/dist/ReactToastify.css';
+
+
+
+//Checking valid data
+const schema = yup.object().shape({
+    email: yup.string().email('Please enter a valid email').required('Email is required'),
+    password: yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
+});
 
 
 export default function LoginPage() {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const { isLoading } = useSelector((state) => state.auth);
+
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
+        resolver: yupResolver(schema),
+        defaultValues: {
+
+            email: '',
+            password: '',
+
+        },
+
+    });
+
+
+    const onSubmit = async (data) => {
+        console.log(data, 'form data for login');
+        dispatch(LoginUser(data, navigate));
+    };
+
     return (
         <div className="flex items-center justify-center h-screen bg-stroke">
             {/* Login Card */}
@@ -67,7 +102,7 @@ export default function LoginPage() {
                 </div>
 
                 {/* Form */}
-                <form className="space-y-4">
+                <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
                     {/* Email */}
                     <div>
                         <label
@@ -78,10 +113,14 @@ export default function LoginPage() {
                         </label>
                         <input
                             type="email"
+                            {...register('email')}
                             id="email"
-                            className="w-full p-2 bg-stroke text-boxdark-2 rounded-md focus:ring-2 focus:ring-gray-2"
+                            className={`w-full p-2 bg-stroke text-boxdark-2 rounded-md focus:ring-2 focus:ring-gray-2 ${errors.email ? 'border-red focus:border-red' : 'border-stroke'}`}
                             placeholder="Enter your email"
                         />
+                        {errors.email && <p className='text-red text-sm'>
+                            {errors.email.message}
+                        </p>}
                     </div>
 
                     {/* Password */}
@@ -94,10 +133,14 @@ export default function LoginPage() {
                         </label>
                         <input
                             type="password"
+                            {...register('password')}
                             id="password"
-                            className="w-full p-2 bg-stroke text-boxdark-2 rounded-md focus:ring-2 focus:ring-gray-2"
+                            className={`w-full p-2 bg-stroke text-boxdark-2 rounded-md focus:ring-2 focus:ring-gray-2 ${errors.password ? 'border-red focus:border-red' : 'border-stroke'}`}
                             placeholder="Enter your password"
                         />
+                        {errors.password && <p className='text-red text-sm'>
+                            {errors.password.message}
+                        </p>}
                     </div>
 
                     {/* Remember Me */}
@@ -114,8 +157,7 @@ export default function LoginPage() {
 
                     {/* Submit Button */}
                     <button
-                        onClick={() => { navigate("/dashboard"); }
-                        }
+                        disabled={isSubmitting}
                         type="submit"
                         className="w-full flex items-center justify-center gap-2 border border-primary bg-primary text-white rounded-md py-2 hover:bg-opacity-90 transition"
                     >

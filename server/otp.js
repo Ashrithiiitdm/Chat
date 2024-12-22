@@ -1,4 +1,4 @@
-export const content = ({ name, otp }) => {
+const content = ({ name, otp }) => {
     return `<!DOCTYPE html>
         <html lang="en">
 
@@ -42,3 +42,5 @@ export const content = ({ name, otp }) => {
         </html>`;
 
 };
+
+export default content;
