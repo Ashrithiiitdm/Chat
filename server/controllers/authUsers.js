@@ -25,7 +25,7 @@ export const regUser = catchAsync(async (req, res, next) => {
         });
     }
 
-    const existingUser = await pool.query('SELECT * FROM Users WHERE email = $1', [Email]);
+    const existingUser = await pool.query('SELECT * FROM Users WHERE email = $1', [email]);
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
@@ -39,12 +39,15 @@ export const regUser = catchAsync(async (req, res, next) => {
         }
         else {
             //rewrite create new user.
-            await pool.query('DELETE FROM Users WHERE email = $1', [Email]);
+            await pool.query('DELETE FROM Users WHERE email = $1', [email]);
         }
     }
 
     //register a new User
-    await pool.query('INSERT INTO Users (user_name, email, user_pass) VALUES ($1, $2, $3) RETURNING *', [Name, Email, hashedPassword]);
+    let newUser = await pool.query('INSERT INTO Users (user_name, email, user_pass) VALUES ($1, $2, $3) RETURNING *', [Name, email, hashedPassword]);
+
+    //console.log("This is from regUser:", newUser.rows, "length:", newUser.rows.length);
+    req.body.user_id = newUser.rows[0].user_id;
     next();
 });
 
@@ -52,24 +55,31 @@ export const regUser = catchAsync(async (req, res, next) => {
 
 export const sendOtp = catchAsync(async (req, res, next) => {
     const { user_id } = req.body;
+
+    //console.log("User_id in sednOtp:", user_id);
+
     const otp = otpGenerator.generate(6, {
+        digits: true,
         upperCaseAlphabets: false,
         lowerCaseAlphabets: false,
         specialCharacters: false,
     });
+
+    //console.log(otp);
 
     const hashedOtp = await bcrypt.hash(otp.toString(), 12);
 
     // Option 1: Use Unix timestamp in seconds
     const expiry_time = new Date(Date.now() + 10 * 60 * 1000);
 
+
     const user = await pool.query('UPDATE Users SET otp = $1, otp_expiry = $2 WHERE user_id = $3 RETURNING *', [hashedOtp, expiry_time, user_id]);
 
-    console.log(user.rows)
+    //console.log("This is from sendOtp:", user.rows, "length:", user.rows.length);
 
     sendMail({
         name: user.rows[0].user_name,
-        otp,
+        otp: otp,
         email: user.rows[0].email,
     });
 
@@ -92,15 +102,15 @@ export const resendOtp = catchAsync(async (req, res, next) => {
     }
 
     const otp = otpGenerator.generate(6, {
+        digits: true,
         upperCaseAlphabets: false,
         lowerCaseAlphabets: false,
-        specialCharacters: false,
+        specialChars: false,
     });
 
     const hashedOtp = await bcrypt.hash(otp.toString(), 12);
 
-    const expiry_time = Math.floor(Date.now() / 1000) + 10 * 60; // expiry in seconds
-
+    const expiry_time = new Date(Date.now() + 10 * 60 * 1000);
 
     await pool.query('UPDATE Users SET otp = $1, otp_expiry = $2 WHERE email = $3', [hashedOtp, expiry_time, email]);
 
@@ -125,7 +135,7 @@ export const resendOtp = catchAsync(async (req, res, next) => {
 
 export const verifyOtp = catchAsync(async (req, res, next) => {
     const { email, otp } = req.body;
-    const user = await pool.query('SELECT * FROM Users WHERE email = $1 AND otp_expiry > $2', [email, Date.now()]);
+    const user = await pool.query('SELECT * FROM Users WHERE email = $1 AND otp_expiry > $2', [email, new Date(Math.floor(Date.now() / 1000))]);
 
     if (user.rows.length === 0) {
         return res.status(400).json({
@@ -150,7 +160,7 @@ export const verifyOtp = catchAsync(async (req, res, next) => {
         });
     }
 
-    const verifiedUser = await pool.query('UPDATE Users SET verified = true AND otp = NULL AND otp_expiry = NULL WHERE email = $1 RETURNING *', [email]);
+    const verifiedUser = await pool.query('UPDATE Users SET verified = true,otp = NULL,otp_expiry = NULL WHERE email = $1 RETURNING *', [email]);
 
     const token = signToken(verifiedUser.rows[0].user_id);
 
@@ -188,7 +198,8 @@ export const loginUser = catchAsync(async (req, res, next) => {
 
         if (isValid) {
             const token = signToken(user.rows[0].user_id);
-
+            console.log("Sign token:", token);
+            //localStorage.setItem('token', token);
             return res.status(200).json({
                 status: 'success',
                 message: 'Login successful',
@@ -208,18 +219,19 @@ export const loginUser = catchAsync(async (req, res, next) => {
 
 
 //Auth
-
-
 export const auth = catchAsync(async (req, res, next) => {
     try {
         let token;
 
+        //console.log("In middleware");
         if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
             token = req.headers.authorization.split(' ')[1];
         }
         else if (req.cookies.jwt) {
             token = req.cookies.jwt;
         }
+
+        //console.log("In middleware", token)
 
         if (!token) {
             return res.status(401).json({
@@ -228,9 +240,9 @@ export const auth = catchAsync(async (req, res, next) => {
             });
         }
 
-        const decoded = promisify(jwt.verify)(token, process.env.JWT_SECRET);
+        const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
-        console.log(decoded);
+        // console.log(decoded);
 
         //Check if user still exists
         const currentUser = await pool.query('SELECT * FROM Users WHERE user_id = $1', [decoded.user_id]);
@@ -244,22 +256,26 @@ export const auth = catchAsync(async (req, res, next) => {
         const query = `
             SELECT 
                 CASE 
-                WHEN password_changed_at IS NOT NULL 
+                WHEN pass_changedAt IS NOT NULL 
                 AND EXTRACT(EPOCH FROM pass_changedAt) / 1000 > $1::integer 
                 THEN true
                 ELSE false
                 END as password_changed
-            FROM users 
-            WHERE id = $2
+            FROM Users 
+            WHERE user_id = $2
         `;
 
-        const result = await pool.query(query, [decoded.iat, decoded.user_id]).rows[0].password_changed;
+        const result = await pool.query(query, [decoded.iat, decoded.user_id]).rows;
+        //console.log("before:", result);
         if (result) {
             return res.status(401).json({
                 message: 'User recently changed password. Please login again',
             });
         }
 
+        //console.log("Current user:", currentUser.rows);
+
+        req.body.user_id = currentUser.rows[0].user_id;
         req.user = currentUser.rows[0];
         next();
 

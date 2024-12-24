@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
@@ -6,7 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from "react-redux";
 import { LoginUser } from "../../state/slices/auth";
 import 'react-toastify/dist/ReactToastify.css';
-
+import { Eye, EyeSlash } from "@phosphor-icons/react";
 
 
 //Checking valid data
@@ -19,6 +19,12 @@ const schema = yup.object().shape({
 export default function LoginPage() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
+
+    const [passwordVisible, setPasswordVisible] = useState(false);
+
+    const togglePasswordVisibility = () => {
+        setPasswordVisible(!passwordVisible);
+    };
 
     const { isLoading } = useSelector((state) => state.auth);
 
@@ -131,13 +137,23 @@ export default function LoginPage() {
                         >
                             Password *
                         </label>
-                        <input
-                            type="password"
-                            {...register('password')}
-                            id="password"
-                            className={`w-full p-2 bg-stroke text-boxdark-2 rounded-md focus:ring-2 focus:ring-gray-2 ${errors.password ? 'border-red focus:border-red' : 'border-stroke'}`}
-                            placeholder="Enter your password"
-                        />
+                        <div className='relative'>
+                            <input
+                                type={passwordVisible ? "text" : "password"}
+                                {...register('password')}
+                                id="password"
+                                className={`w-full p-2 bg-stroke text-boxdark-2 rounded-md focus:ring-2 focus:ring-gray-2 ${errors.password ? 'border-red focus:border-red' : 'border-stroke'}`}
+                                placeholder="Enter your password"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => togglePasswordVisibility()}
+                                className="absolute right-3 top-3"
+                            >
+                                {passwordVisible ? <EyeSlash size={20} /> : <Eye size={20} />}
+                            </button>
+                        </div>
+
                         {errors.password && <p className='text-red text-sm'>
                             {errors.password.message}
                         </p>}

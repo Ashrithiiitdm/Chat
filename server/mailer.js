@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
-import otp from './otp.js';
+import content from './otp.js';
 
 dotenv.config();
 
@@ -19,7 +19,7 @@ export const sendMail = async ({ name, otp, email }) => {
     const mailOptions = {
         to: email,
         subject: 'OTP for verification',
-        html: otp({ name, otp }),
+        html: content({ name, otp }),
     };
 
     try {

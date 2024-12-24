@@ -39,13 +39,17 @@ export default slice.reducer;
 
 const { setError, setLoading, loginSucess, logOutSuccess } = slice.actions;
 
-export function RegisterUser(formData) {
+export function RegisterUser(formData, navigate) {
     return async (dispatch, getState) => {
         dispatch(setError(null));
         dispatch(setLoading(true));
 
         const reqBody = {
-            ...formData,
+
+            name: formData.name,
+            email: formData.email,
+            password: formData.password,
+
         };
 
         await axios.post('/auth/signup', reqBody, {
@@ -62,12 +66,17 @@ export function RegisterUser(formData) {
             toast.error(err.response.data.message);
         }).finally(() => {
             dispatch(setLoading(false));
+
+            if (!getState().auth.error) {
+                navigate(`/auth/verify?email=${formData.email}`);
+            }
+
         });
 
     };
 };
 
-export function ResendOtp() {
+export function ResendOtp(email) {
     return async (dispatch, getState) => {
         dispatch(setError(null));
         dispatch(setLoading(true));
@@ -93,15 +102,16 @@ export function ResendOtp() {
 };
 
 
-export function VerifyOtp(formValues, navigate) {
+export function VerifyOtp(formData, navigate) {
 
     return async (dispatch, getState) => {
 
         dispatch(setError(null));
         dispatch(setLoading(true));
 
-        await axios.post('/auth/verify', {
-            ...formValues,
+        await axios.post('/auth/verify-otp', {
+            email: formData.email,
+            otp: formData.otp,
         }, {
             headers: {
                 'Content-Type': 'application/json',
@@ -118,7 +128,7 @@ export function VerifyOtp(formValues, navigate) {
         }).catch(function (err) {
             console.log(err);
             dispatch(setError(err));
-            toast.error(err.response.data?.message || 'Something went wrong');
+            toast.error(err);
         }).finally(() => {
             dispatch(setLoading(false));
             if (!getState().auth.error) {
@@ -132,7 +142,7 @@ export function VerifyOtp(formValues, navigate) {
 
 
 
-export function LoginUser(formValues, navigate) {
+export function LoginUser(formData, navigate) {
 
     return async (dispatch, getState) => {
 
@@ -140,7 +150,8 @@ export function LoginUser(formValues, navigate) {
         dispatch(setLoading(true));
 
         await axios.post('/auth/login', {
-            ...formValues,
+            email: formData.email,
+            password: formData.password,
         }, {
             headers: {
                 'Content-Type': 'application/json',
@@ -167,4 +178,18 @@ export function LoginUser(formValues, navigate) {
 
     };
 
+};
+
+
+export function LogOutUser(navigate) {
+    return async (dispatch, getState) => {
+        try {
+            dispatch(logOutSuccess());
+            navigate('/');
+            toast.success('Logged out successfully');
+        }
+        catch (err) {
+            console.log(err);
+        }
+    };
 };

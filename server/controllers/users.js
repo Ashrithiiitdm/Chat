@@ -5,13 +5,11 @@ import bcrypt from "bcrypt";
 export const getUser = catchAsync(async (req, res, next) => {
 
     const { user } = req;
-
+    //console.log("In getUser:", req);
     res.status(200).json({
         status: 'success',
         message: 'User found',
-        data: {
-            user,
-        },
+        user: user,
     });
 
 });
@@ -19,16 +17,29 @@ export const getUser = catchAsync(async (req, res, next) => {
 //Update name and bio
 export const updateUser = catchAsync(async (req, res, next) => {
 
-    const { name, bio } = req.body;
-    const { user_id } = req.user;
+    //console.log(req.body);
 
-    const updatedUser = await pool.query('UPDATE Users SET name = $1, bio = $2 WHERE user_id = $3 RETURNING *', [name, bio, user_id]).rows[0];
+    const { name, bio } = req.body;
+    //console.log(name, bio);
+    const { user_id } = req.body;
+
+    //console.log("User id in users", user_id);
+    const updatedUser = await pool.query('UPDATE Users SET user_name = $1, bio = $2 WHERE user_id = $3 RETURNING *', [name, bio, user_id]);
+
+    //console.log(updatedUser.rows);
+
+    if (updatedUser.rows.length === 0) {
+        return res.status(400).json({
+            status: 'fail',
+            message: 'No such user found',
+        });
+    }
 
     res.status(200).json({
         status: 'success',
         message: 'Profile updated successfully',
         data: {
-            user: updatedUser,
+            user: updatedUser.rows[0],
         },
     });
 
@@ -38,15 +49,15 @@ export const updateUser = catchAsync(async (req, res, next) => {
 export const updateAvatar = catchAsync(async (req, res, next) => {
 
     const { avatar } = req.body;
-    const { user_id } = req.user;
+    const { user_id } = req.body;
 
-    const updatedUser = await pool.query('UPDATE Users SET avatar = $1 WHERE user_id = $2 RETURNING *', [avatar, user_id]).rows[0];
+    const updatedUser = await pool.query('UPDATE Users SET avatar = $1 WHERE user_id = $2 RETURNING *', [avatar, user_id]);
 
     res.status(200).json({
         status: 'success',
         message: 'Avatar updated successfully',
         data: {
-            user: updatedUser,
+            user: updatedUser.rows[0],
         },
     });
 });
@@ -54,22 +65,25 @@ export const updateAvatar = catchAsync(async (req, res, next) => {
 
 //update password
 export const updatePassword = catchAsync(async (req, res, next) => {
-    const { currPass, newPass } = req.body;
-    const { user_id } = req.user;
+    //console.log(req.body);
+    const { currentPassword, newPassword } = req.body;
+    const { user_id } = req.body;
 
-    const user_Pass = await pool.query('SELECT user_pass FROM Users WHERE user_id = $1', [user_id]).rows[0].user_pass;
-
-    if (!user_Pass || !(await bcrypt.compare(currPass, user_Pass))) {
+    const result = await pool.query('SELECT user_pass FROM Users WHERE user_id = $1', [user_id]);
+    const user_Pass = result.rows[0].user_pass;
+    //console.log("Curr pass:", currentPassword);
+    //console.log("New pass:", newPassword);
+    if (!user_Pass || !(await bcrypt.compare(currentPassword, user_Pass))) {
         return res.status(400).json({
             status: 'fail',
             message: 'Incorrect password',
         });
     }
 
-    const hashedPass = await bcrypt.hash(newPass, 12);
-    const passChangedAt = Date.now();
+    const hashedPass = await bcrypt.hash(newPassword, 12);
+    const passChangedAt = new Date();
 
-    await pool.query('UPDATE Users SET user_pass = $1 AND pass_changedAt = $2 WHERE user_id = $3', [hashedPass, passChangedAt, user_id]);
+    await pool.query('UPDATE Users SET user_pass = $1,pass_changedAt = $2 WHERE user_id = $3', [hashedPass, passChangedAt, user_id]);
 
     res.status(200).json({
         status: 'success',
@@ -81,7 +95,7 @@ export const updatePassword = catchAsync(async (req, res, next) => {
 
 //get users
 export const getAllUsers = catchAsync(async (req, res, next) => {
-    const { user_id } = req.user;
+    const { user_id } = req.body;
 
     const verified_users = await pool.query('SELECT user_id, user_name, user_status, avatar FROM Users WHERE verfied = $1 AND user_id != $2', [true, user_id]).rows;
 
@@ -98,7 +112,7 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
 
 //conversation
 export const startConversation = catchAsync(async (req, res, next) => {
-    const { user_id } = req.user;
+    const { user_id } = req.body;
     const { receiver_id } = req.body;
 
     // Check if a conversation between the users already exists
@@ -167,7 +181,7 @@ export const startConversation = catchAsync(async (req, res, next) => {
 
 //get conversations
 export const getConversations = catchAsync(async (req, res, next) => {
-    const { user_id } = req.user;
+    const { user_id } = req.body;
 
     //Finding converstaions which user is a part of
     const conversationsQuery = `

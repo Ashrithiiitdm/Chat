@@ -6,10 +6,10 @@ const router = express.Router();
 router.use(authController.auth);
 
 
-router.get('/me', userController.getUser);
-router.patch('/me', userController.updateUser);
+router.get('/profile', userController.getUser);
+router.post('/profile', userController.updateUser);
 router.patch('/avatar', userController.updateAvatar);
-router.patch('/password', userController.updatePassword);
+router.patch('/update-password', userController.updatePassword);
 
 
 router.get('/users', userController.getAllUsers);

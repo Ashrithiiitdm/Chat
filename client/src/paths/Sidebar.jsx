@@ -8,6 +8,8 @@ import {
     UserCircle,
 } from '@phosphor-icons/react';
 import DarkMode from "../components/DarkMode";
+import { useDispatch } from "react-redux";
+import { LogOutUser } from "../state/slices/auth";
 
 const Icons = [
     {
@@ -26,7 +28,7 @@ const Icons = [
 ];
 
 export default function Sidebar() {
-
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const [selected, setSelected] = useState(0);
     const handleClick = (key) => {
@@ -60,7 +62,9 @@ export default function Sidebar() {
                     <DarkMode />
                 </div>
 
-                <button onClick={() => { navigate('/'); }} className="flex flex-row items-center justify-center border rounded-md border-stroke p-2 dark:border-strokedark hover:bg-stone-100 hover:cursor-pointer">
+                <button onClick={() => {
+                    dispatch(LogOutUser(navigate));
+                }} className="flex flex-row items-center justify-center border rounded-md border-stroke p-2 dark:border-strokedark hover:bg-stone-100 hover:cursor-pointer">
                     <SignOut size={24} />
                 </button>
             </div>

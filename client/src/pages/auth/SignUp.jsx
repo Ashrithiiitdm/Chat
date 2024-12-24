@@ -36,7 +36,7 @@ export default function SignUp() {
 
     const onSubmit = async (data) => {
         console.log(data, 'form data for signup');
-        dispatch(RegisterUser(data));
+        dispatch(RegisterUser(data, navigate));
     };
 
     return (
