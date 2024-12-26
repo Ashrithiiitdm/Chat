@@ -20,10 +20,6 @@ const slice = createSlice({
         updateUser(state, action) {
             state.user = action.payload.user;
         },
-
-        setUser(state, action) {
-            state.user = action.payload;
-        },
         setLoading(state, action) {
             state.loading = action.payload;
         },
@@ -35,7 +31,7 @@ const slice = createSlice({
 
 export default slice.reducer;
 
-const { setUser, setLoading, setError } = slice.actions;
+const { setLoading, setError } = slice.actions;
 
 
 export function FetchUserProfile() {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import * as yup from "yup";
@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import 'react-toastify/dist/ReactToastify.css';
 import { RegisterUser } from "../../state/slices/auth";
+import { Eye, EyeSlash } from "@phosphor-icons/react";
 
 
 //Checking valid data
@@ -22,6 +23,19 @@ export default function SignUp() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
+    const [passwordVisible, setPasswordVisible] = useState({
+        password: false,
+        confirmPassword: false,
+    });
+
+    const togglePasswordVisibility = (field) => {
+        setPasswordVisible((prevState) => {
+            return {
+                ...prevState,
+                [field]: !prevState[field],
+            };
+        });
+    };
 
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
         resolver: yupResolver(schema),
@@ -143,13 +157,22 @@ export default function SignUp() {
                         >
                             Password *
                         </label>
-                        <input
-                            type="password"
-                            {...register('password')}
-                            id="password"
-                            className={`w-full p-2 bg-stroke text-boxdark-2 rounded-md focus:ring-2 focus:ring-gray-2 ${errors.password ? 'border-red focus:border-red' : 'border-stroke'}`}
-                            placeholder="Enter your password"
-                        />
+                        <div className="relative">
+                            <input
+                                type={passwordVisible.password ? 'text' : 'password'}
+                                {...register('password')}
+                                id="password"
+                                className={`w-full p-2 bg-stroke text-boxdark-2 rounded-md focus:ring-2 focus:ring-gray-2 ${errors.password ? 'border-red focus:border-red' : 'border-stroke'}`}
+                                placeholder="Enter your password"
+                            />
+                            <button
+                                type='button'
+                                onClick={() => togglePasswordVisibility('password')}
+                                className="absolute right-3 top-3"
+                            >
+                                {passwordVisible.password ? <EyeSlash size={20} /> : <Eye size={20} />}
+                            </button>
+                        </div>
                         {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
                     </div>
 
@@ -161,13 +184,22 @@ export default function SignUp() {
                         >
                             Re-type Password *
                         </label>
-                        <input
-                            type="password"
-                            {...register('confirmPassword')}
-                            id="password"
-                            className={`w-full p-2 bg-stroke text-boxdark-2 rounded-md focus:ring-2 focus:ring-gray-2 ${errors.confirmPassword ? 'border-red focus:border-red' : 'border-stroke'}`}
-                            placeholder="Re-type your password"
-                        />
+                        <div className="relative">
+                            <input
+                                type={passwordVisible.confirmPassword ? 'text' : 'password'}
+                                {...register('confirmPassword')}
+                                id="password"
+                                className={`w-full p-2 bg-stroke text-boxdark-2 rounded-md focus:ring-2 focus:ring-gray-2 ${errors.confirmPassword ? 'border-red focus:border-red' : 'border-stroke'}`}
+                                placeholder="Re-type your password"
+                            />
+                            <button
+                                type='button'
+                                onClick={() => togglePasswordVisibility('confirmPassword')}
+                                className="absolute right-3 top-3"
+                            >
+                                {passwordVisible.confirmPassword ? <EyeSlash size={20} /> : <Eye size={20} />}
+                            </button>
+                        </div>
                         {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>}
                     </div>
                     {/* Submit Button */}

@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { FetchUserProfile, UpdateProfile, UpdatePassword } from '../state/slices/profile';
 import { toast } from 'react-toastify';
 import { Eye, EyeSlash } from '@phosphor-icons/react';
+import { current } from '@reduxjs/toolkit';
 
 // Validation schemas
 const profileSchema = yup.object().shape({
@@ -29,6 +30,7 @@ const passwordSchema = yup.object().shape({
 export default function Profile() {
     const [activeTab, setActiveTab] = useState('profile'); // Toggle between Profile and Update Password
     const [passwordVisible, setPasswordVisible] = useState({
+        currentPassword: false,
         newPassword: false,
         confirmPassword: false,
     });
@@ -261,7 +263,7 @@ export default function Profile() {
                                     onClick={() => togglePasswordVisibility('currentPassword')}
                                     className="absolute right-3 top-3"
                                 >
-                                    {passwordVisible.newPassword ? <EyeSlash size={20} /> : <Eye size={20} />}
+                                    {passwordVisible.currentPassword ? <EyeSlash size={20} /> : <Eye size={20} />}
                                 </button>
                             </div>
 
