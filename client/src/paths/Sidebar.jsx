@@ -6,6 +6,8 @@ import {
     ChatTeardrop,
     SignOut,
     UserCircle,
+    UserCirclePlus,
+    UserList
 } from '@phosphor-icons/react';
 import DarkMode from "../components/DarkMode";
 import { useDispatch } from "react-redux";
@@ -24,6 +26,18 @@ const Icons = [
         title: 'Profile',
         icon: <UserCircle size={24} />,
         path: '/dashboard/profile'
+    },
+    {
+        key: 2,
+        title: 'Friend Requests',
+        icon: <UserCirclePlus size={24} />,
+        path: '/dashboard/friend-requests'
+    },
+    {
+        key: 3,
+        title: 'Friends',
+        icon: <UserList size={24} />,
+        path: '/dashboard/friends',
     }
 ];
 

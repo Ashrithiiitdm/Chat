@@ -6,7 +6,8 @@ import SignUp from './pages/auth/SignUp';
 import Verification from './pages/auth/Verification';
 import Profile from './pages/Profile';
 import Layout from './paths';
-
+import FriendRequests from './pages/FriendRequests';
+import Friends from './pages/Friends';
 
 export default function App() {
 
@@ -21,6 +22,8 @@ export default function App() {
       <Route path='/dashboard' element={<Layout />} >
         <Route index element={<Messages />} />
         <Route path='profile' element={<Profile />} />
+        <Route path='friend-requests' element={<FriendRequests />} />
+        <Route path='friends' element={<Friends />} />
       </Route>
 
     </Routes >

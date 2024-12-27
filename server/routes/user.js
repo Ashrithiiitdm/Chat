@@ -13,6 +13,7 @@ router.patch('/update-password', userController.updatePassword);
 
 
 router.get('/users', userController.getAllUsers);
+router.get('/get-friends', userController.getFriends);
 
 router.post('/startChat', userController.startConversation);
 
