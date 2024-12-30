@@ -110,77 +110,8 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
 });
 
 
-export const getFriends = catchAsync(async (req, res, next) => {
-    const { user_id } = req.body;
-
-    const friends = await pool.query(
-        `
-        SELECT * FROM Users
-        WHERE user_id IN (
-            SELECT friend_id
-            FROM Friends
-            WHERE user_id = $1
-        );
-        `, [user_id]
-    )
-
-    if (friends.rows.length === 0) {
-        return res.status(200).json({
-            status: 'success',
-            message: 'No friends found',
-            data: {
-                friends: [],
-            },
-        });
-    }
-    else {
-        return res.status(200).json({
-            status: 'success',
-            message: 'Friends found',
-            data: {
-                friends: friends.rows,
-            },
-        });
-    }
-
-});
 
 
-//get friend requests
-export const getFriendRequests = catchAsync(async (req, res, next) => {
-    const { user_id } = req.body;
-
-    const friendRequests = await pool.query(
-        `
-        SELECT * FROM Users
-        WHERE user_id IN (
-            SELECT sender_id
-            FROM Friend_Requests
-            WHERE receiver_id = $1
-        );
-        `, [user_id]
-    );
-
-    if (friendRequests.rows.length === 0) {
-        return res.status(200).json({
-            status: 'success',
-            message: 'No friend requests found',
-            data: {
-                friendRequests: [],
-            },
-        });
-    }
-
-    return res.status(200).json({
-        status: 'success',
-        message: 'Friend requests found',
-        data: {
-            friendRequests: friendRequests.rows,
-        },
-    });
-
-
-});
 
 
 //conversation

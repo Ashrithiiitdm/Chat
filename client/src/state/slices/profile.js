@@ -35,6 +35,7 @@ const { setLoading, setError } = slice.actions;
 
 
 export function FetchUserProfile() {
+
     return async (dispatch, getState) => {
         axios.get("/user/profile", {
             headers: {
@@ -53,6 +54,8 @@ export function FetchUserProfile() {
 };
 
 export function UpdateProfile(formValues) {
+
+    //console.log(formValues);
 
     return async (dispatch, getState) => {
 

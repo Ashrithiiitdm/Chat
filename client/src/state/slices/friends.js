@@ -1,5 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
+import axios from "../../axios.js";
+
 
 const initialState = {
     users: [],
@@ -37,24 +39,6 @@ const { updateFriends, updateFriendRequests, updateUsers, setError } = slice.act
 
 export default slice.reducer;
 
-export function FetchUsers() {
-    return async (dispatch, getState) => {
-        await axios.get('/user/users', {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${getState().auth.token}`,
-            },
-        }).then(function (response) {
-            console.log(response.data.users);
-            dispatch(updateUsers({ users: response.data.users }));
-        }).catch((err) => {
-            console.log(err);
-            setError(err.response.data.message || 'An error occurred');
-            toast.error(err.response.data.message || 'An error occurred');
-        })
-    };
-};
-
 export function FetchFriends() {
     return async (dispatch, getState) => {
         await axios.get('/user/get-friends', {
@@ -63,15 +47,14 @@ export function FetchFriends() {
                 Authorization: `Bearer ${getState().auth.token}`,
             }
         }).then(function (response) {
-            console.log(response.data.friends);
-            dispatch(updateFriends({ friends: response.data.friends }));
-        }).catch((err) => {
-            console.log(err);
-            setError(err.response.data.message || 'An error occurred');
-            toast.error(err.response.data.message || 'An error occurred');
+            console.log("In Fetchfriends:", response.data.data.friends);
+            dispatch(updateFriends({ friends: response.data.data.friends }));
+        }).catch(function (error) {
+            console.log(error);
+            toast.error(error.response.message || 'Failed to fetch friends.');
         });
     };
-};
+}
 
 export function FetchFriendRequests() {
     return async (dispatch, getState) => {
@@ -79,15 +62,11 @@ export function FetchFriendRequests() {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${getState().auth.token}`,
-            },
+            }
         }).then(function (response) {
-            console.log(response.data.friendRequests);
             dispatch(updateFriendRequests({ friendRequests: response.data.friendRequests }));
-        }).catch((err) => {
-            console.log(err);
-            setError(err.response.data.message || 'An error occurred');
-            toast.error(err.response.data.message || 'An error occurred');
+        }).catch(function (error) {
+            console.log(error);
         });
     };
 };
-
