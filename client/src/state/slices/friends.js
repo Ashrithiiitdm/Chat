@@ -39,6 +39,25 @@ const { updateFriends, updateFriendRequests, updateUsers, setError } = slice.act
 
 export default slice.reducer;
 
+
+export function FetchUsers() {
+    return async (dispatch, getState) => {
+        await axios.get('/user/users', {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${getState().auth.token}`,
+            },
+        }).then(function (response) {
+            console.log(response.data);
+            dispatch(updateUsers({ users: response.data.data.users }));
+        }).catch((err) => {
+            console.log(err);
+            toast.error(err.response.message || 'Failed to fetch users.');
+        });
+    };
+};
+
+
 export function FetchFriends() {
     return async (dispatch, getState) => {
         await axios.get('/user/get-friends', {
@@ -51,7 +70,7 @@ export function FetchFriends() {
             dispatch(updateFriends({ friends: response.data.data.friends }));
         }).catch(function (error) {
             console.log(error);
-            toast.error(error.response.message || 'Failed to fetch friends.');
+            toast.error(error.response || 'Failed to fetch friends.');
         });
     };
 }
@@ -64,7 +83,7 @@ export function FetchFriendRequests() {
                 Authorization: `Bearer ${getState().auth.token}`,
             }
         }).then(function (response) {
-            dispatch(updateFriendRequests({ friendRequests: response.data.friendRequests }));
+            dispatch(updateFriendRequests({ friendRequests: response.data.data.friendRequests }));
         }).catch(function (error) {
             console.log(error);
         });

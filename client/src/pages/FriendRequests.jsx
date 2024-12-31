@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ChatTeardrop } from '@phosphor-icons/react';
 import User01 from '../images/user-01.png'; // Avatar image
 import { useDispatch, useSelector } from 'react-redux';
-import { FetchFriendRequests } from "../state/slices/friends";
+import { FetchFriendRequests, FetchUsers } from "../state/slices/friends";
 import { toast } from 'react-toastify';
 
 const exampleRequests = [
@@ -15,13 +15,27 @@ const exampleRequests = [
 export default function FriendRequests() {
     const [activeTab, setActiveTab] = useState('requests');
     const [requests, setRequests] = useState([]);
+    const [allUsers, setAllUsers] = useState([]);
+
+    const { users } = useSelector((state) => state.friends);
+
+    console.log("All users", users);
 
     const dispatch = useDispatch();
 
 
     useEffect(() => {
-        // Replace with real data fetching logic
+        dispatch(FetchUsers());
+    }, []);
 
+    useEffect(() => {
+        setAllUsers(users);
+    }, [users]);
+
+    console.log('All users', allUsers);
+
+    useEffect(() => {
+        // Simulate fetching friend requests data (replace with API call if needed)
         setRequests(exampleRequests);
     }, []);
 
@@ -57,6 +71,7 @@ export default function FriendRequests() {
                 >
                     Add Friend
                 </button>
+
             </div>
 
             {/* Content */}
@@ -94,8 +109,7 @@ export default function FriendRequests() {
                 )}
 
                 {activeTab === 'add' && (
-                    <div className="space-y-6 max-w-150">
-                        <h3 className="text-xl font-medium">Add a Friend</h3>
+                    <div className="space-y-6 max-w-full">
                         <div className="flex items-center space-x-4 p-4 border-b border-stroke">
                             <input
                                 type="text"
@@ -104,13 +118,39 @@ export default function FriendRequests() {
                             />
                             <button
                                 className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-200"
-                            //onClick={() => handleAddFriend('John Doe')} // Replace with dynamic input
                             >
-                                Add
+                                Search
                             </button>
+                        </div>
+
+                        {/* Render all users below the search bar */}
+                        <div className=" max-h-[calc(100vh-150px)] overflow-y-auto scrollbar-hide -mx-4">
+                            {allUsers.length > 0 && allUsers.map((user) => (
+                                <div
+                                    key={user.user_id}
+                                    className="flex items-center cursor-pointer space-x-4 p-4 hover:bg-gray-2 dark:hover:bg-boxdark-2 transition-colors duration-200 border-b border-stroke"
+                                >
+                                    <img
+                                        src={user.avatar}
+                                        alt={user.user_name}
+                                        className="w-16 h-16 rounded-full object-cover border-2 border-blue-200"
+                                    />
+                                    <div className="flex-1">
+                                        <p className="text-lg font-medium text-black dark:text-white">{user.user_name}</p>
+
+                                    </div>
+                                    <div className="ml-auto flex items-center space-x-2">
+                                        <button className="bg-primary text-white px-4 py-2 rounded-full hover:bg-blue-600 transition-colors duration-200">
+                                            Send a request
+                                        </button>
+
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 )}
+
             </div>
         </div>
     );

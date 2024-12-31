@@ -45,6 +45,12 @@ export const updateUser = catchAsync(async (req, res, next) => {
 
 });
 
+
+// export const updateUserSocket = (user_id, socket_id) => {
+//     await pool.query('')
+// };
+
+
 //Update avatar
 export const updateAvatar = catchAsync(async (req, res, next) => {
 
@@ -97,13 +103,13 @@ export const updatePassword = catchAsync(async (req, res, next) => {
 export const getAllUsers = catchAsync(async (req, res, next) => {
     const { user_id } = req.body;
 
-    const verified_users = await pool.query('SELECT user_id, user_name, user_status, avatar FROM Users WHERE verfied = $1 AND user_id != $2', [true, user_id]).rows;
+    const verified_users = await pool.query('SELECT user_id, user_name, user_status, avatar FROM Users WHERE verified = $1 AND user_id != $2', [true, user_id]);
 
     return res.status(200).json({
         status: 'success',
         message: 'Users found',
         data: {
-            users: verified_users,
+            users: verified_users.rows,
         },
     })
 

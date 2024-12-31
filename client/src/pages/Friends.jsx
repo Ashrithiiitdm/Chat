@@ -1,33 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { ChatTeardrop } from '@phosphor-icons/react';
 import User01 from '../images/user-01.png';
 import { FetchFriends } from "../state/slices/friends";
 import { useDispatch, useSelector } from "react-redux";
 
-// Example data for friends (you can replace this with real data from an API or Redux store)
-const exampleFriends = [
-    { id: 1, name: "John Doe", avatar: User01 },
-    { id: 2, name: "Jane Smith", avatar: User01 },
-    { id: 3, name: "Alice Johnson", avatar: User01 },
-    { id: 4, name: "Bob Brown", avatar: User01 },
-    { id: 5, name: "Charlie Davis", avatar: User01 },
-    { id: 6, name: "David Green", avatar: User01 },
-    { id: 7, name: "Eve White", avatar: User01 },
-    { id: 8, name: "Frank Black", avatar: User01 },
-];
-
 export default function FriendsPage() {
-    const [friends, setFriends] = useState([]);
     const dispatch = useDispatch();
+
+    // Get the friends list directly from Redux state
     const { friends: friendsList } = useSelector((state) => state.friends);
 
-    console.log(friendsList);
-
+    // Fetch friends when the component mounts
     useEffect(() => {
-        // Simulate fetching friends data (replace with API call if needed)
         dispatch(FetchFriends());
-        setFriends(friendsList);
-    }, []);
+    }, [dispatch]);
 
     return (
         <div className="w-full">
@@ -38,13 +24,13 @@ export default function FriendsPage() {
 
                 {/* Scrollable Friends list with hidden scrollbar */}
                 <div className="max-h-[calc(100vh-150px)] overflow-y-auto scrollbar-hide -mx-4">
-                    {friends.map((friend) => (
+                    {friendsList.map((friend) => (
                         <div
                             key={friend.friend_id}
                             className="flex items-center cursor-pointer  space-x-4 p-4 hover:bg-gray-2 dark:hover:bg-boxdark-2  duration-200 border-b border-stroke"
                         >
                             <img
-                                src={friend.avatar}
+                                src={friend.avatar || User01}
                                 alt={friend.friend_name}
                                 className="w-16 h-16 rounded-full object-cover border-2 border-blue-200"
                             />

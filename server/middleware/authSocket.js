@@ -4,7 +4,7 @@ dotenv.config();
 
 const verifyToken = (socket, next) => {
     const token = socket.handshake.auth.token;
-
+    console.log(socket.handshake);
     try {
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
         socket.user = decodedToken;

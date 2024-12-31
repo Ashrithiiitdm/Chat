@@ -18,8 +18,18 @@ const regSocket = (server) => {
     });
 
     io.on("connection", (socket) => {
-        console.log("New connection");
+        //console.log("New connection");
         console.log(socket.user);
+
+        const user_id = socket.handshake.query['user_id'];
+        const socket_id = socket.id;
+
+        console.log(`New connection: ${socket_id}, user_id: ${user_id}`);
+
+
+        if(user_id){
+            
+        }
 
         //I should handle new connections.
 
