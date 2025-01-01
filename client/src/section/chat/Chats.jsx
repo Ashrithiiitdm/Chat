@@ -1,6 +1,9 @@
 import { MagnifyingGlass } from "@phosphor-icons/react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import User01 from '../../images/user-01.png';
+import { FetchUsers } from "../../state/slices/chats";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 const List = [
     {
@@ -57,6 +60,17 @@ const List = [
 export default function ChatList() {
 
     const [selected, setSelected] = useState(0);
+
+    const { users, isUserLoading, isMessagesLoading, messages } = useSelector((state) => state.chats);
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(FetchUsers());
+    }, [dispatch]);
+
+    if (isUserLoading) {
+        return <div>Loading...</div>
+    }
 
     return (
         <div className='h-full flex-col x1:flex x1:w-1/4'>

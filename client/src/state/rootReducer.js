@@ -4,7 +4,7 @@ import appReducer from './slices/app';
 import authReducer from './slices/auth';
 import profileReducer from './slices/profile';
 import friendsReducer from './slices/friends';
-
+import chatsReducer from './slices/chats';
 
 const rootPersistConfig = {
     key: 'root',
@@ -17,6 +17,7 @@ const rootReducer = combineReducers({
     auth: authReducer,
     profile: profileReducer,
     friends: friendsReducer,
+    chats: chatsReducer,
 });
 
 

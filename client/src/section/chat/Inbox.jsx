@@ -1,19 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import User01 from '../../images/user-01.png';
 import { Microphone, PaperPlaneTilt, Phone, VideoCamera } from "@phosphor-icons/react";
 import DropDown from "../../components/DropDown";
 import EmojiPicker from "../../components/EmojiPicker";
 import UserInfo from "./UserInfo";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { ToggleAudioModal } from "../../state/slices/app";
 import Attacher from "../../components/FileAttacher";
 import Separator from "../../components/Sep";
 import { Document, Audio, VideoImg } from "../../components/Msgs/export";
-import Aud from '../../audio.webm'
+import Aud from '../../audio.webm';
+import { FetchMessages } from "../../state/slices/chats";
+
 
 export default function MsgInbox() {
     const dispatch = useDispatch();
     const [userInfo, setUserInfo] = useState(false);
+
+    const { messages, isMessagesLoading, selectedUser } = useSelector((state) => state.chats);
+
+    useEffect(() => {
+        dispatch(FetchMessages(selectedUser.user_id));
+    }, [dispatch, selectedUser.user_id]);
+
+
 
     const handleToggle = () => {
         setUserInfo((prev) => !prev);
@@ -24,6 +34,14 @@ export default function MsgInbox() {
         dispatch(ToggleAudioModal(true));
     }
 
+    if (isMessagesLoading) {
+        return (
+            <div className='flex justify-center items-center h-full'>
+                <div className='animate-spin rounded-full h-32 w-32 border-t-2 border-primary'></div>
+            </div>
+        )
+    }
+
     return (
         <>
             <div className={`flex h-full flex-col border-l border-stroke dark:border-strokedark ${userInfo === true ? 'xl:w-1/2' : 'xl:w-3/4'} `}>
@@ -31,11 +49,11 @@ export default function MsgInbox() {
             dark:border-strokedark px-6 py-4.5'>
                     <div className='flex items-center' onClick={handleToggle}>
                         <div className="mr-4.5 h-13 w-full max-w-13 overflow-hidden rounded-full">
-                            <img src={User01} alt='Avatar' className='h-full w-full object-cover object-center'></img>
+                            <img src={selectedUser.avatar ?? User01} alt='Avatar' className='h-full w-full object-cover object-center'></img>
                         </div>
                         <div>
                             <h5 className='font-medium text-black dark:text-white'>
-                                Ash
+                                {selectedUser.user_name}
                             </h5>
                             <p className='text-sm'> Reply to message</p>
                         </div>
