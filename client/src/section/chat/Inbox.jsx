@@ -1,176 +1,77 @@
-import React, { useState, useEffect } from "react";
-import User01 from '../../images/user-01.png';
-import { Microphone, PaperPlaneTilt, Phone, VideoCamera } from "@phosphor-icons/react";
-import DropDown from "../../components/DropDown";
-import EmojiPicker from "../../components/EmojiPicker";
-import UserInfo from "./UserInfo";
-import { useSelector, useDispatch } from "react-redux";
-import { ToggleAudioModal } from "../../state/slices/app";
-import Attacher from "../../components/FileAttacher";
-import Separator from "../../components/Sep";
-import { Document, Audio, VideoImg } from "../../components/Msgs/export";
-import Aud from '../../audio.webm';
-import { FetchMessages } from "../../state/slices/chats";
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { FetchMessages, SendMessage } from '../../state/slices/chats.js';
+import { toast } from 'react-toastify';
 
-
-export default function MsgInbox() {
+const Inbox = () => {
     const dispatch = useDispatch();
-    const [userInfo, setUserInfo] = useState(false);
-
-    const { messages, isMessagesLoading, selectedUser } = useSelector((state) => state.chats);
+    const { selectedUser, messages, isMessagesLoading } = useSelector((state) => state.chats);
+    const [text, setText] = useState('');
+    const [imgPreview, setImgPreview] = useState('');
 
     useEffect(() => {
-        dispatch(FetchMessages(selectedUser.user_id));
-    }, [dispatch, selectedUser.user_id]);
+        if (selectedUser?.user_id) {
+            dispatch(FetchMessages(selectedUser.user_id));
+        }
+    }, [selectedUser, dispatch]);
 
-
-
-    const handleToggle = () => {
-        setUserInfo((prev) => !prev);
-    }
-
-    const handleMic = (e) => {
+    const handleSendMessage = (e) => {
         e.preventDefault();
-        dispatch(ToggleAudioModal(true));
-    }
+        if (!text.trim() && !imgPreview) return;
 
-    if (isMessagesLoading) {
-        return (
-            <div className='flex justify-center items-center h-full'>
-                <div className='animate-spin rounded-full h-32 w-32 border-t-2 border-primary'></div>
-            </div>
-        )
+        const messageData = {
+            text: text.trim(),
+            image: imgPreview,
+        };
+        dispatch(SendMessage(messageData));
+        setText('');
+        setImgPreview('');
+    };
+
+    if (!selectedUser) {
+        return <p className='text-center'>Please select a user to start chatting.</p>;
     }
 
     return (
-        <>
-            <div className={`flex h-full flex-col border-l border-stroke dark:border-strokedark ${userInfo === true ? 'xl:w-1/2' : 'xl:w-3/4'} `}>
-                <div className='sticky flex items-center flex-row justify-between border-b border-stroke 
-            dark:border-strokedark px-6 py-4.5'>
-                    <div className='flex items-center' onClick={handleToggle}>
-                        <div className="mr-4.5 h-13 w-full max-w-13 overflow-hidden rounded-full">
-                            <img src={selectedUser.avatar ?? User01} alt='Avatar' className='h-full w-full object-cover object-center'></img>
-                        </div>
-                        <div>
-                            <h5 className='font-medium text-black dark:text-white'>
-                                {selectedUser.user_name}
-                            </h5>
-                            <p className='text-sm'> Reply to message</p>
-                        </div>
-                    </div>
-                    <div className='flex flex-row items-center space-x-8'>
-                        <button >
-                            <VideoCamera size={24} weight='bold' />
-                        </button>
-                        <button >
-                            <Phone size={24} weight='bold' />
-                        </button>
-                        <DropDown />
-
-                    </div>
-                </div>
-
-                {/**Displaying messages */}
-                <div className='max-h-full space-y-3.5 overflow-auto no-scrollbar px-6 py-7.5 grow'>
-                    <div className='max-w-100'>
-                        <p className='mb-2.5 text-sm font-medium'>Ash</p>
-                        <div className='mb-2.5 rounded-2xl rounded-tl-none bg-gray px-5 py-3 dark:bg-boxdark-2'>
-                            <p>Manchidi raww...</p>
-                        </div>
-                        <p className='text-sm'>1:55pm</p>
-                    </div>
-
-                    <div className='max-w-100 ml-auto'>
-                        <div className='mb-2.5 rounded-2xl rounded-br-none bg-primary px-5 py-3'>
-                            <p className='text-white'>Manchidi kAAdu rAA...</p>
-                        </div>
-                        <p className='text-sm'>2:00pm</p>
-                    </div>
-                    <div className='max-w-100'>
-                        <p className='mb-2.5 text-sm font-medium'>Ash</p>
-                        <div className='mb-2.5 rounded-2xl rounded-tl-none bg-gray px-5 py-3 dark:bg-boxdark-2'>
-                            <p>Manchidi raww...</p>
-                        </div>
-                        <p className='text-sm'>1:55pm</p>
-                    </div>
-                    <Separator />
-                    <Document writer="Ash" incoming={false} status='read' time='4:32pm' />
-                    <Audio incoming={false} src={Aud} status='delivered' time='4:32pm' />
-                    <div className='max-w-100 ml-auto'>
-                        <div className='mb-2.5 rounded-2xl rounded-br-none bg-primary px-5 py-3'>
-                            <p className='text-white'>Manchidi kAAdu rAA...</p>
-                        </div>
-                        <p className='text-sm'>2:00pm</p>
-                    </div>
-                    <div className='max-w-100'>
-                        <p className='mb-2.5 text-sm font-medium'>Ash</p>
-                        <div className='mb-2.5 rounded-2xl rounded-tl-none bg-gray px-5 py-3 dark:bg-boxdark-2'>
-                            <p>Manchidi raww...</p>
-                        </div>
-                        <p className='text-sm'>1:55pm</p>
-                    </div>
-                    <Separator />
-                    <VideoImg writer="Ash" incoming={false} status='read' time='4:32pm' />
-                    <div className='max-w-100 ml-auto'>
-                        <div className='mb-2.5 rounded-2xl rounded-br-none bg-primary px-5 py-3'>
-                            <p className='text-white'>Manchidi kAAdu rAA...</p>
-                        </div>
-                        <p className='text-sm'>2:00pm</p>
-                    </div>
-                    <div className='max-w-100'>
-                        <p className='mb-2.5 text-sm font-medium'>Ash</p>
-                        <div className='mb-2.5 rounded-2xl rounded-tl-none bg-gray px-5 py-3 dark:bg-boxdark-2'>
-                            <p>Manchidi raww...</p>
-                        </div>
-                        <p className='text-sm'>1:55pm</p>
-                    </div>
-                    <Separator />
-                    <div className='max-w-100 ml-auto'>
-                        <div className='mb-2.5 rounded-2xl rounded-br-none bg-primary px-5 py-3'>
-                            <p className='text-white'>Manchidi kAAdu rAA...</p>
-                        </div>
-                        <p className='text-sm'>2:00pm</p>
-                    </div>
-
-                </div>
-
-                {/**Input Section */}
-                <div className='sticky bottom-0 border-t border-stroke bg-white px-6 py-5 dark:border-x-strokedark dark:bg-boxdark'>
-                    <form className='flex items-center justify-between space-x-4.5 mb-3'>
-                        <div className='relative w-full'>
-                            <input
-                                type='text'
-                                placeholder='Type Something Here'
-                                className='h-13 w-full rounded-md border border-stroke bg-gray pl-5 pr-19 
-                            text-black placholder-body outline-none focus:border-primary dark:border-strokedark dark:bg-boxdark-2 dark:text-white'>
-                            </input>
-                            <div className='absolute right-5 top-1/2 -translate-y-1/2 items-center justify-end space-x-4'>
-                                <button
-                                    className='hover:text-primary'>
-                                    <Attacher />
-                                </button>
-                                <button className='hover:text-primary'>
-                                    <EmojiPicker />
-                                </button>
-                                <button className='hover:text-primary'>
-                                    <Microphone onClick={handleMic} />
-                                </button>
+        <div className="inbox">
+            <div className="messages-container overflow-y-auto p-4">
+                {isMessagesLoading ? (
+                    <p>Loading messages...</p>
+                ) : messages.length === 0 ? (
+                    <p className="text-center">No messages yet. Start the conversation!</p>
+                ) : (
+                    messages.map((msg, index) => (
+                        <div
+                            key={index}
+                            className={`max-w-100 ${msg.sender === selectedUser.user_id ? '' : 'ml-auto'}`}
+                        >
+                            <div
+                                className={`mb-2.5 rounded-2xl ${msg.sender === selectedUser.user_id
+                                    ? 'rounded-tl-none bg-gray dark:bg-boxdark-2'
+                                    : 'rounded-br-none bg-primary text-white'
+                                    } px-5 py-3`}
+                            >
+                                <p>{msg.text}</p>
                             </div>
+                            <p className="text-sm">{new Date(msg.created_at).toLocaleTimeString()}</p>
                         </div>
-                        <button className='flex items-center justify-center h-13 max-w-13 w-full rounded-md bg-primary text-white hover:bg-opacity-90'>
-                            <PaperPlaneTilt size={24} weight='bold' />
-                        </button>
-                    </form>
-                </div>
+                    ))
+                )}
             </div>
+            <form onSubmit={handleSendMessage} className="message-input mt-4 flex items-center">
+                <input
+                    type="text"
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    placeholder="Type a message..."
+                    className="flex-1 border rounded-lg px-3 py-2"
+                />
+                <button type="submit" className="ml-2 bg-primary text-white px-4 py-2 rounded-lg">
+                    Send
+                </button>
+            </form>
+        </div>
+    );
+};
 
-            {/**User Info */}
-            {userInfo &&
-                <div className='w-1/4'>
-                    <UserInfo handleToggle={handleToggle} />
-                </div>
-            }
-
-        </>
-    )
-}
+export default Inbox;

@@ -61,7 +61,8 @@ export default function ChatList() {
 
     const [selected, setSelected] = useState(0);
 
-    const { users, isUserLoading, isMessagesLoading, messages } = useSelector((state) => state.chats);
+    const { onlineUsers } = useSelector((state) => state.auth);
+    const { isUserLoading } = useSelector((state) => state.chats);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -100,7 +101,7 @@ export default function ChatList() {
                             <div className='relative mr-3.5 h-11 w-full max-w-11 rounded-full'>
                                 <img src={obj.imgSrc} alt='Profile' className='h-full w-full rounded-full object-cover object-center'></img>
                                 {/**Span part is for the green online symbol */}
-                                <span className='absolute bottom-0 right-0 block h-3 w-3 rounded-full border-2 border-gray-2 bg-success'>
+                                <span className={`absolute bottom-0 right-0 block h-3 w-3 rounded-full border-2 border-gray-2 ${onlineUsers.includes(obj.user_id) ? 'bg-success' : 'bg-danger'}`}>
                                 </span>
                             </div>
                             <div className='w-full'>

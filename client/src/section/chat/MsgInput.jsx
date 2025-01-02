@@ -4,25 +4,16 @@ import { useDispatch, useSelector } from 'react-redux';
 
 export default function MsgInput() {
 
-    const [text, setText] = useState('');
-    const [imgPreview, setImgPreview] = useState(null);
-    const fileInputRef = useRef(null);
+   
 
     const { selectedUser } = useSelector((state) => state.chats);
     const dispatch = useDispatch();
 
-    const handleImageChange = (e) => {
+    
+
+    const handleSendMessage = () => {
 
     };
-
-    const removeImage = () => {
-
-    };
-
-    const handleSendImage = () => {
-
-    };
-
 
     return (
         <div className='p-4 w-full'>
@@ -36,6 +27,13 @@ export default function MsgInput() {
                     </button>
                 </div>
             )}
+
+            <form onSubmit={handleSendMessage} className='flex items-center gap-3 '>
+                <div className='flex-1 flex gap-2'>
+                
+                </div>
+            </form>
+
         </div>
     );
 };

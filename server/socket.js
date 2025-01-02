@@ -1,64 +1,41 @@
 import { Server } from "socket.io";
-import authSocket from "./middleware/authSocket.js";
-import { newConnection } from "./socketHandlers/newConnection.js";
-import { disconnectHandler } from "./socketHandlers/disconnection.js";
-import { getMessages } from "./socketHandlers/getMessage.js";
-import { newMessage } from "./socketHandlers/newMessage.js";
+import { createServer } from "http";
+import app from "./app.js";
 
-const regSocket = (server) => {
-    const io = new Server(server, {
-        cors: {
-            origin: "*",
-            methods: ["GET", "POST"]
-        },
+const httpServer = createServer(app);
+
+const io = new Server(httpServer, {
+    cors: {
+        origin: "*"
+
+    }
+});
+
+
+export function getReceiverSocketId(user_id) {
+    return userSocketMap[user_id];
+}
+
+const userSocketMap = {};
+
+
+io.on("connection", (socket) => {
+    console.log("New connection", socket.id);
+
+    const user_id = socket.handshake.query.user_id;
+
+    if (user_id) {
+        userSocketMap[user_id] = socket.id;
+    }
+
+    io.emit("getOnlineUsers", Object.keys(userSocketMap));
+
+    socket.on("disconnect", () => {
+        console.log("Client disconnected", socket.id);
+        delete userSocketMap[user_id];
+        io.emit("getOnlineUsers", Object.keys(userSocketMap));
     });
 
-    io.use((socket, next) => {
-        authSocket(socket, next);
-    });
+});
 
-    io.on("connection", (socket) => {
-        //console.log("New connection");
-        console.log(socket.user);
-
-        const user_id = socket.handshake.query['user_id'];
-        const socket_id = socket.id;
-
-        console.log(`New connection: ${socket_id}, user_id: ${user_id}`);
-
-
-        if(user_id){
-            
-        }
-
-        //I should handle new connections.
-
-        socket.on("newConnection", () => {
-            newConnection(socket, io);
-        });
-        //I should Handle new messages
-
-        socket.on("newMessage", (message) => {
-            newMessage(socket, message, io);
-        });
-
-        //I should Handle disconnections
-
-        socket.on("disconnect", () => {
-            disconnectHandler(socket);
-        });
-
-
-        //I should handle chat history
-        socket.on("chatHistory", (data) => {
-            getMessages(socket, data);
-
-        });
-        //
-
-    });
-
-
-};
-
-export default regSocket;
+export { io, httpServer };

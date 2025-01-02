@@ -19,8 +19,9 @@ router.get('/friend-requests', friendsController.getFriendRequests);
 router.post('/add-friend', friendsController.addFriend);
 router.post('/add-friend-request', friendsController.addFriendRequest);
 
-router.post('/startChat', userController.startConversation);
 
-router.get('/chats', userController.getConversations);
+router.get('/messages/:user_id', userController.getMessages);
+router.post('/messages/:user_id', userController.sendMessage);
+
 
 export default router;

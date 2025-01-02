@@ -1,13 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit"
 import axios from "../../axios";
 import { toast } from 'react-toastify';
+import { io } from 'socket.io-client';
 
 const initialState = {
     isLoading: false,
     error: null,
     token: null,
-    user: {},
+    user_id: null,
     isLogged: false,
+    socket: null,
+    onlineUsers: [],
 }
 
 const slice = createSlice({
@@ -25,6 +28,7 @@ const slice = createSlice({
         loginSucess(state, action) {
             state.token = action.payload;
             state.isLogged = true;
+            state.user_id = action.payload.user_id;
         },
 
         logOutSuccess(state, action) {
@@ -32,12 +36,20 @@ const slice = createSlice({
             state.isLogged = false;
         },
 
+        setSocket(state, action) {
+            state.socket = action.payload.socket;
+        },
+
+        setOnlineUsers(state, action) {
+            state.onlineUsers = action.payload.onlineUsers;
+        },
+
     }
 });
 
 export default slice.reducer;
 
-const { setError, setLoading, loginSucess, logOutSuccess } = slice.actions;
+const { setSocket, setError, setLoading, loginSucess, logOutSuccess } = slice.actions;
 
 export function RegisterUser(formData, navigate) {
     return async (dispatch, getState) => {
@@ -159,14 +171,14 @@ export function LoginUser(formData, navigate) {
         }).then(function (response) {
             console.log(response.data);
 
-            const { token, message } = response.data;
+            const { token, message, user_id } = response.data;
 
-            dispatch(loginSucess(token));
+            dispatch(loginSucess(token, user_id));
 
 
             toast.success(message || 'Logged in successfully');
         }).catch(function (error) {
-            console.log('Error is ', error.response.data);
+            console.log('Error is ', error.response);
             dispatch(setError(error));
             toast.error(error.response.data.message || 'Something went wrong');
         }).finally(() => {
@@ -191,5 +203,45 @@ export function LogOutUser(navigate) {
         catch (err) {
             console.log(err);
         }
+        finally {
+            dispatch(setLoading(false));
+
+        }
     };
+};
+
+export function connectSocket() {
+
+    return (dispatch, getState) => {
+        const user_id = getState().auth.user_id;
+
+        if (!user_id || getState().socket?.connected) return;
+
+        const socket = io('http://localhost:8000', {
+            query: {
+                user_id: user_id,
+            }
+        });
+        socket.connect();
+
+
+        socket.on('getOnlineUsers', (user_ids) => {
+            console.log('Online users', user_ids);
+            dispatch(setOnlineUsers({ onlineUsers: user_ids }));
+        });
+
+        dispatch(setSocket({ socket: socket }));
+
+    };
+
+};
+
+export function disconnectSocket() {
+    return (dispatch, getState) => {
+        const socket = getState().auth.socket;
+        if (socket?.connected) {
+            socket.disconnect();
+        }
+        dispatch(setSocket({ socket: null }));
+    }
 };

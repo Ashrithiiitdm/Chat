@@ -45,6 +45,8 @@ export default function Sidebar() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [selected, setSelected] = useState(0);
+
+
     const handleClick = (key) => {
         navigate(Icons[key].path);
         setSelected(key);

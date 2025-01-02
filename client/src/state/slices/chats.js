@@ -1,124 +1,100 @@
 import { createSlice } from '@reduxjs/toolkit';
+import axios from 'axios';
 import { toast } from 'react-toastify';
-import axios from '../../axios';
-
 
 const initialState = {
-    messages: [],
     users: [],
     selectedUser: null,
-    isUserLoading: false,
+    messages: [],
     isMessagesLoading: false,
 };
 
-
-const slice = createSlice({
+const chatsSlice = createSlice({
     name: 'chats',
     initialState,
-
     reducers: {
         updateUsers(state, action) {
             state.users = action.payload.users;
         },
-
+        selectUser(state, action) {
+            state.selectedUser = action.payload.user;
+            state.messages = []; // Reset messages when a new user is selected
+        },
         updateMessages(state, action) {
-            state.messages = action.payload.messages;
+            state.messages = [...state.messages, ...action.payload.messages];
         },
-
-        setUserLoading(state, action) {
-            state.isUserLoading = action.payload;
-        },
-
         setMessagesLoading(state, action) {
             state.isMessagesLoading = action.payload;
         },
-
-        setSelectedUser(state, action) {
-            state.selectedUser = action.payload.user;
-        }
-
     },
-
 });
 
+export const { updateUsers, selectUser, updateMessages, setMessagesLoading } = chatsSlice.actions;
 
-export default slice.reducer;
-
-
-const { updateUsers, updateMessages, setUserLoading, setMessagesLoading, setSelectedUser } = slice.actions;
 
 export function FetchUsers() {
     return async (dispatch, getState) => {
-
-        setUserLoading(true);
-
-        await axios.get('/user/users', {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${getState().auth.token}`,
-            }
-        }).then(function (response) {
-            console.log(response.data);
+        try {
+            const response = await axios.get('/user/users', {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${getState().auth.token}`,
+                },
+            });
             dispatch(updateUsers({ users: response.data.data.users }));
-
-        }).catch((err) => {
-            console.log(err);
-            toast.error(err.response.message || 'Failed to fetch users.');
-
-        }).finally(() => {
-            setUserLoading(false);
-        });
-
-    }
-};
-
-export function FetchMessages(user_id) {
-    return async (dispatch, getState) => {
-
-        setMessagesLoading(true);
-
-        await axios.get(`/messages/${user_id}`, {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${getState().auth.token}`,
-            }
-        }).then(function (response) {
-            console.log(response.data);
-            dispatch(updateMessages({ messages: response.data.data.messages }));
-
-        }).catch((err) => {
-            console.log(err);
-            toast.error(err.response.message || 'Failed to fetch messages.');
-
-        }).finally(() => {
-            setMessagesLoading(false);
-        });
-
+        } catch (err) {
+            toast.error(err.response?.data?.message || 'Failed to fetch users.');
+        }
     };
+}
 
-};
+export function FetchMessages(user_id, page = 1) {
+    return async (dispatch, getState) => {
+        dispatch(setMessagesLoading(true));
 
+        try {
+            const response = await axios.get(`/messages/${user_id}?page=${page}`, {
+                headers: {
+                    Authorization: `Bearer ${getState().auth.token}`,
+                },
+            });
+            dispatch(
+                updateMessages({
+                    messages: response.data.data.messages,
+                })
+            );
+        } catch (err) {
+            toast.error(err.response?.data?.message || 'Failed to fetch messages.');
+        } finally {
+            dispatch(setMessagesLoading(false));
+        }
+    };
+}
 
 export function SendMessage(msgData) {
     return async (dispatch, getState) => {
         const { selectedUser, messages } = getState().chats;
 
-        await axios.get(`/messages/${selectedUser.user_id}`, msgData, {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${getState().auth.token}`,
-            },
-        }).then(function (response) {
-            console.log(response.data);
-            dispatch(updateMessages({ messages: [...messages, response.data.data.message] }));
-        }).catch((err) => {
-            console.log(err);
-            toast.error(err.response.data.message || 'Failed to send message.');
-        }).finally(() => {
-            setMessagesLoading(false);
-        });
-
-
+        try {
+            const response = await axios.post(
+                `/messages/${selectedUser.user_id}`,
+                msgData,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${getState().auth.token}`,
+                    },
+                }
+            );
+            dispatch(
+                updateMessages({
+                    messages: [...messages, response.data.data.message],
+                })
+            );
+        } catch (err) {
+            toast.error(err.response?.data?.message || 'Failed to send message.');
+        }
     };
-};
+}
 
+export default chatsSlice.reducer;

@@ -32,6 +32,7 @@
     "react-router-dom": "^7.0.2",
     "react-toastify": "^11.0.2",
     "redux-persist": "^6.0.0",
+    "socket.io-client": "^4.8.1",
     "wavesurfer.js": "^7.8.11",
     "yup": "^1.6.1"
   },

@@ -46,10 +46,6 @@ export const updateUser = catchAsync(async (req, res, next) => {
 });
 
 
-// export const updateUserSocket = (user_id, socket_id) => {
-//     await pool.query('')
-// };
-
 
 //Update avatar
 export const updateAvatar = catchAsync(async (req, res, next) => {
@@ -117,125 +113,61 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
 
 
 
+//get messages
+export const getMessages = catchAsync(async (req, res, next) => {
+    const { user_id: user1_id } = req.params;
+    const { user_id: user2_id } = req.body;
 
+    try {
+        const messages = await pool.query(
+            `
+                SELECT 
+                    M.msg_id,
+                    M.contents, 
+                    M.audio_url, 
+                    M.media_url,
+                    M.msg_type,
+                    M.created_at,
+                    M.user_id AS sender_id,
+                
+                FROM Messages M
+    
+                JOIN Conversations C
+    
+                ON M.conversation_id = C.conversation_id
+    
+                WHERE 
+                    (C.user1_id = $1 AND C.user2_id = $2)
+    
+                    OR
+    
+                    (C.user1_id = $2 AND C.user2_id = $1)
+                
+                ORDER BY M.created_at ASC;
+            `, [user1_id, user2_id]
+        );
 
-
-//conversation
-export const startConversation = catchAsync(async (req, res, next) => {
-    const { user_id } = req.body;
-    const { receiver_id } = req.body;
-
-    // Check if a conversation between the users already exists
-    const existingConversationQuery = `
-        SELECT c.conversation_id,
-               json_agg(json_build_object('msg_id', m.msg_id, 'contents', m.contents, 'created_at', m.created_at)) AS messages,
-               json_agg(json_build_object('user_id', u.user_id, 'user_name', u.user_name)) AS participants
-        FROM Conversations c
-        LEFT JOIN Messages m ON c.conversation_id = m.conversation_id
-        JOIN Conversation_Participants cp ON c.conversation_id = cp.conversation_id
-        JOIN Users u ON cp.user_id = u.user_id
-        WHERE c.conversation_id IN (
-            SELECT conversation_id
-            FROM Conversation_Participants
-            WHERE user_id = $1 OR user_id = $2
-            GROUP BY conversation_id
-            HAVING COUNT(*) = 2
-        )
-        GROUP BY c.conversation_id;
-    `;
-
-    const existingConversationResult = await pool.query(existingConversationQuery, [user_id, receiver_id]).rows[0];
-
-    // If a conversation exists, return it
-    if (existingConversationResult.rows.length > 0) {
         return res.status(200).json({
-            status: "success",
-            data: existingConversationResult,
+            status: 'success',
+            message: 'Messages found',
+            data: {
+                messages: messages.rows,
+            },
+        });
+
+    }
+    catch (err) {
+        console.log(err);
+        return res.status(500).json({
+            status: 'fail',
+            message: 'Failed to fetch messages',
         });
     }
 
-    // If no conversation exists, create a new one
-    const newConversationQuery = `
-        INSERT INTO Conversations DEFAULT VALUES
-        RETURNING conversation_id;
-    `;
-    const newConversationId = await pool.query(newConversationQuery).rows[0].conversation_id;
-
-    // Add both users as participants to the new conversation
-    const addParticipantsQuery = `
-        INSERT INTO Conversation_Participants (conversation_id, user_id)
-        VALUES ($1, $2), ($1, $3);
-    `;
-    await pool.query(addParticipantsQuery, [newConversationId, user_id, receiver_id]);
-
-    // Fetch the newly created conversation with participants
-    const newConversationFetchQuery = `
-        SELECT c.conversation_id,
-               json_agg(json_build_object('user_id', u.user_id, 'user_name', u.user_name)) AS participants,
-               json_build_array() AS messages
-        FROM Conversations c
-        JOIN Conversation_Participants cp ON c.conversation_id = cp.conversation_id
-        JOIN Users u ON cp.user_id = u.user_id
-        WHERE c.conversation_id = $1
-        GROUP BY c.conversation_id;
-    `;
-    const newConversationFetchResult = await pool.query(newConversationFetchQuery, [newConversationId]);
-
-    // Return the newly created conversation
-    return res.status(201).json({
-        status: "success",
-        data: newConversationFetchResult.rows[0],
-    });
 });
 
 
-//get conversations
-export const getConversations = catchAsync(async (req, res, next) => {
-    const { user_id } = req.body;
-
-    //Finding converstaions which user is a part of
-    const conversationsQuery = `
-        SELECT 
-        c.conversation_id,
-        (
-            SELECT json_agg(
-                json_build_object(
-                    'user_id', u.user_id,
-                    'user_name', u.user_name
-                )
-            )
-            FROM Conversation_Participants cp2
-            JOIN Users u ON cp2.user_id = u.user_id
-            WHERE cp2.conversation_id = c.conversation_id
-        ) AS participants,
-        COALESCE(
-            json_agg(
-                json_build_object(
-                    'msg_id', m.msg_id,
-                    'contents', m.contents,
-                    'created_at', m.created_at
-                ) ORDER BY m.created_at ASC
-            ) FILTER (WHERE m.msg_id IS NOT NULL),
-            '[]'
-        ) AS messages
-        FROM Conversations c
-        JOIN Conversation_Participants cp ON c.conversation_id = cp.conversation_id
-        LEFT JOIN Messages m ON m.conversation_id = c.conversation_id
-        WHERE cp.user_id = $1
-        GROUP BY c.conversation_id
-        ORDER BY (
-            SELECT MAX(m.created_at) 
-            FROM Messages m
-            WHERE m.conversation_id = c.conversation_id
-        ) DESC NULLS LAST;
-    `;
-
-    const conversations = await pool.query(conversationsQuery, [user_id]).rows;
-
-    return res.status(200).json({
-        status: "success",
-        data: conversations,
-    });
-
+//send messages
+export const sendMessage = catchAsync(async (req, res, next) => {
 
 });
