@@ -21,7 +21,7 @@ const chatsSlice = createSlice({
             if (state.selectedUser?.user_id === action.payload.user.user_id) return;
             state.selectedUser = action.payload.user;
             //console.log(state.selectedUser);
-            //state.messages = []; // Reset messages when a new user is selected
+            state.messages = []; // Reset messages when a new user is selected
             state.isMessagesLoading = true; // Set loading state for fetching messages
         },
         updateMessages(state, action) {
