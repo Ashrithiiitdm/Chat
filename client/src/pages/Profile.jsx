@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import User01 from '../images/user-01.png';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, set } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 import { FetchUserProfile, UpdateProfile, UpdatePassword } from '../state/slices/profile';
 import { toast } from 'react-toastify';
@@ -34,6 +34,26 @@ export default function Profile() {
         newPassword: false,
         confirmPassword: false,
     });
+
+    const [profilePicture, setProfilePicture] = useState(null);
+
+    const handleImageUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) {
+            return;
+        }
+        const reader = new FileReader();
+
+        reader.readAsDataURL(file);
+
+        reader.onload = async () => {
+            const base64 = reader.result;
+            setProfilePicture(base64);
+            await dispatch(UpdateProfile({ profilePicture: base64 }));
+        };
+
+    };
+
 
     // Function to toggle password visibility
     const togglePasswordVisibility = (field) => {
@@ -89,6 +109,8 @@ export default function Profile() {
             });
         }
     }, [user, reset]);
+
+
 
     // Handle profile form submission
     const onSubmit = async (data) => {
@@ -152,7 +174,7 @@ export default function Profile() {
                         <div className="flex mb-8">
                             <div className="relative">
                                 <img
-                                    src={User01}
+                                    src={profilePicture || user.avatar || User01}
                                     alt="Profile"
                                     className="w-32 h-32 rounded-full object-cover"
                                 />
@@ -175,13 +197,12 @@ export default function Profile() {
                                     </svg>
                                     <input
                                         type="file"
-                                        name="profile"
                                         id="profile"
-                                        className="sr-only"
-                                        onChange={(e) => {
-                                            const file = e.target.files[0];
-                                            if (file) toast.info('Profile picture updated successfully!');
-                                        }}
+                                        className='hidden'
+                                        accept='image/*'
+                                        onChange={handleImageUpload}
+                                    // disabled={isSubmitting}
+
                                     />
                                 </label>
                             </div>

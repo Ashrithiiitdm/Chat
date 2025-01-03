@@ -62,9 +62,10 @@ export function UpdateProfile(formValues) {
         const reqBody = {
             name: formValues.name,
             bio: formValues.bio,
+
         };
 
-        axios.post("/user/profile", reqBody,
+        axios.put("/user/profile", reqBody,
             {
                 headers: {
                     "Content-Type": "application/json",

@@ -8,7 +8,7 @@ router.use(authController.auth);
 
 
 router.get('/profile', userController.getUser);
-router.post('/profile', userController.updateUser);
+router.put('/profile', userController.updateUser);
 router.patch('/avatar', userController.updateAvatar);
 router.patch('/update-password', userController.updatePassword);
 

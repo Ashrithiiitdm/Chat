@@ -52,6 +52,7 @@ export function FetchUsers() {
             dispatch(updateUsers({ users: response.data.data.users }));
         }).catch((err) => {
             console.log(err);
+            setError(err);
             toast.error(err.response.message || 'Failed to fetch users.');
         });
     };
@@ -70,6 +71,7 @@ export function FetchFriends() {
             dispatch(updateFriends({ friends: response.data.data.friends }));
         }).catch(function (error) {
             console.log(error);
+            setError(error);
             toast.error(error.response || 'Failed to fetch friends.');
         });
     };
@@ -86,6 +88,7 @@ export function FetchFriendRequests() {
             dispatch(updateFriendRequests({ friendRequests: response.data.data.friendRequests }));
         }).catch(function (error) {
             console.log(error);
+            setError(error);
         });
     };
 };

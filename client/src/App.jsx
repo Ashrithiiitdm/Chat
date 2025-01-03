@@ -8,9 +8,12 @@ import Profile from './pages/Profile';
 import Layout from './paths';
 import FriendRequests from './pages/FriendRequests';
 import Friends from './pages/Friends';
+import { useSelector } from 'react-redux';
 
 export default function App() {
 
+  const { isLogged } = useSelector(state => state.auth);
+  console.log(isLogged);
   return (
     <Routes>
       <Route path='/' element={<Navigate to='/auth/login' />} />
@@ -19,11 +22,11 @@ export default function App() {
       <Route path='/auth/signup' element={<SignUp />} />
       <Route path='/auth/verify' element={<Verification />} />
 
-      <Route path='/dashboard' element={<Layout />} >
-        <Route index element={<Messages />} />
-        <Route path='profile' element={<Profile />} />
-        <Route path='friend-requests' element={<FriendRequests />} />
-        <Route path='friends' element={<Friends />} />
+      <Route path='/dashboard' element={isLogged ? <Layout /> : <Navigate to='/auth/login' />} >
+        <Route index element={isLogged ? <Messages /> : <Navigate to='/auth/login' />} />
+        <Route path='profile' element={isLogged ? <Profile /> : <Navigate to='/auth/login' />} />
+        <Route path='friend-requests' element={isLogged ? <FriendRequests /> : <Navigate to='/auth/login' />} />
+        <Route path='friends' element={isLogged ? <Friends /> : <Navigate to='/auth/login' />} />
       </Route>
 
     </Routes >

@@ -1,32 +1,26 @@
-import { httpServer, io } from './socket.js';
-import dotenv from 'dotenv';
-import pg from 'pg';
+import app from './app.js';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
 
 
-dotenv.config();
+const PORT = process.env.PORT || 8000;
+const httpServer = createServer(app);
 
-const PORT = process.env.PORT || 3000;
-
-
-// regSocket(server);
-
-const pool = new pg.Pool({
-
-    user: process.env.DB_USER,
-    host: process.env.DB_HOST,
-    database: process.env.DB_NAME,
-    password: process.env.DB_PASSWORD,
-    port: process.env.DB_PORT,
+const io = new Server(httpServer, {
+    cors: {
+        origin: "*",
+    }
 });
 
-export default pool;
+io.on("connection", (socket) => {
+    console.log("New connection", socket.id);
 
+    socket.on("disconnect", () => {
+        console.log("Client disconnected", socket.id);
+    });
 
+});
 
 httpServer.listen(PORT, () => {
-    console.log('Inside server listen');
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
-
-
-

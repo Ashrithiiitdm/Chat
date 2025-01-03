@@ -9,8 +9,8 @@ const initialState = {
     token: null,
     user_id: null,
     isLogged: false,
-    socket: null,
-    onlineUsers: [],
+    isUpdatingProfile: false,
+
 }
 
 const slice = createSlice({
@@ -36,20 +36,20 @@ const slice = createSlice({
             state.isLogged = false;
         },
 
-        setSocket(state, action) {
-            state.socket = action.payload.socket;
-        },
+        // setSocket(state, action) {
+        //     state.socket = action.payload.socket;
+        // },
 
-        setOnlineUsers(state, action) {
-            state.onlineUsers = action.payload.onlineUsers;
-        },
+        // setOnlineUsers(state, action) {
+        //     state.onlineUsers = action.payload.onlineUsers;
+        // },
 
     }
 });
 
 export default slice.reducer;
 
-const { setSocket, setError, setLoading, loginSucess, logOutSuccess } = slice.actions;
+const { setError, setLoading, loginSucess, logOutSuccess } = slice.actions;
 
 export function RegisterUser(formData, navigate) {
     return async (dispatch, getState) => {
@@ -174,7 +174,7 @@ export function LoginUser(formData, navigate) {
             const { token, message, user_id } = response.data;
 
             dispatch(loginSucess(token, user_id));
-
+            //dispatch(connectSocket(user_id));
 
             toast.success(message || 'Logged in successfully');
         }).catch(function (error) {
@@ -205,43 +205,8 @@ export function LogOutUser(navigate) {
         }
         finally {
             dispatch(setLoading(false));
-
+            //dispatch(disconnectSocket());
         }
     };
 };
 
-export function connectSocket() {
-
-    return (dispatch, getState) => {
-        const user_id = getState().auth.user_id;
-
-        if (!user_id || getState().socket?.connected) return;
-
-        const socket = io('http://localhost:8000', {
-            query: {
-                user_id: user_id,
-            }
-        });
-        socket.connect();
-
-
-        socket.on('getOnlineUsers', (user_ids) => {
-            console.log('Online users', user_ids);
-            dispatch(setOnlineUsers({ onlineUsers: user_ids }));
-        });
-
-        dispatch(setSocket({ socket: socket }));
-
-    };
-
-};
-
-export function disconnectSocket() {
-    return (dispatch, getState) => {
-        const socket = getState().auth.socket;
-        if (socket?.connected) {
-            socket.disconnect();
-        }
-        dispatch(setSocket({ socket: null }));
-    }
-};

@@ -37,7 +37,7 @@ const limitter = rateLimit({
     message: 'Too many requests from this IP, please try again in an hour',
 })
 
-app.use('/api', limitter);
+// app.use('/api', limitter);
 app.use(express.urlencoded({
     extended: true
 }));

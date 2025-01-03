@@ -3,7 +3,7 @@ import validator from 'validator';
 import otpGenerator from 'otp-generator';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import pool from '../server.js';
+import pool from '../db/db.js';
 import { promisify } from 'util';
 import { sendMail } from '../mailer.js';
 

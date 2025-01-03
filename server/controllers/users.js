@@ -1,6 +1,7 @@
 import catchAsync from "../utils/catchAsync.js";
-import pool from "../server.js";
+import pool from "../db/db.js";
 import bcrypt from "bcrypt";
+import cloudinary from "../utils/cloudinary.js";
 
 export const getUser = catchAsync(async (req, res, next) => {
 
@@ -53,7 +54,17 @@ export const updateAvatar = catchAsync(async (req, res, next) => {
     const { avatar } = req.body;
     const { user_id } = req.body;
 
-    const updatedUser = await pool.query('UPDATE Users SET avatar = $1 WHERE user_id = $2 RETURNING *', [avatar, user_id]);
+
+    if (!avatar) {
+        return res.status(400).json({
+            status: 'fail',
+            message: 'No avatar found',
+        });
+    }
+
+    const response = await cloudinary.uploader.upload(avatar);
+
+    const updatedUser = await pool.query('UPDATE Users SET avatar = $1 WHERE user_id = $2 RETURNING *', [response.secure_url, user_id]);
 
     res.status(200).json({
         status: 'success',
@@ -100,6 +111,8 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
     const { user_id } = req.body;
 
     const verified_users = await pool.query('SELECT user_id, user_name, user_status, avatar FROM Users WHERE verified = $1 AND user_id != $2', [true, user_id]);
+
+    console.log(verified_users.rows);
 
     return res.status(200).json({
         status: 'success',

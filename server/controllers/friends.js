@@ -1,5 +1,5 @@
 import catchAsync from "../utils/catchAsync.js";
-import pool from "../server.js";
+import pool from "../db/db.js";
 
 export const getFriends = catchAsync(async (req, res, next) => {
     const { user_id } = req.body;

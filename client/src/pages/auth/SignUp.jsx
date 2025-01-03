@@ -53,6 +53,8 @@ export default function SignUp() {
         dispatch(RegisterUser(data, navigate));
     };
 
+    const { isLoading } = useSelector((state) => state.auth);
+
     return (
         <div className="flex items-center justify-center h-screen bg-stroke">
             {/* Login Card */}
@@ -207,7 +209,7 @@ export default function SignUp() {
                         type="submit"
                         className="w-full flex items-center justify-center gap-2 border border-primary bg-primary text-white rounded-md py-2 hover:bg-opacity-90 transition"
                     >
-                        Create Account
+                        {isLoading ? "Loading..." : "Sign Up"}
                     </button>
                 </form>
                 <p className="text-center text-bodydark mt-6">
