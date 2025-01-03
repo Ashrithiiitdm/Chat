@@ -20,11 +20,12 @@ const chatsSlice = createSlice({
         selectUser(state, action) {
             if (state.selectedUser?.user_id === action.payload.user.user_id) return;
             state.selectedUser = action.payload.user;
-            state.messages = []; // Reset messages when a new user is selected
+            //console.log(state.selectedUser);
+            //state.messages = []; // Reset messages when a new user is selected
             state.isMessagesLoading = true; // Set loading state for fetching messages
         },
         updateMessages(state, action) {
-            state.messages = [...state.messages, ...action.payload.messages];
+            state.messages = action.payload.messages;
         },
         setMessagesLoading(state, action) {
             state.isMessagesLoading = action.payload;
@@ -35,28 +36,36 @@ const chatsSlice = createSlice({
 export const { updateUsers, selectUser, updateMessages, setMessagesLoading } = chatsSlice.actions;
 
 // Async thunk to fetch messages for a selected user
-export function FetchMessages(user_id, page = 1) {
+export function FetchMessages() {
     return async (dispatch, getState) => {
         dispatch(setMessagesLoading(true)); // Start loading
 
+        const { user_id } = getState().chats.selectedUser;
+
+        console.log("In fetchmesssages", user_id);
+
         try {
-            const response = await axios.get(`/messages/${user_id}?page=${page}`, {
+            const response = await axios.get(`/user/messages/${user_id}`, {
                 headers: {
                     Authorization: `Bearer ${getState().auth.token}`,
                 },
             });
+
+
             dispatch(
                 updateMessages({
-                    messages: response.data.data.messages,
+                    messages: response.data.messages,
                 })
             );
         } catch (err) {
+            console.log(err);
             toast.error(err.response?.data?.message || 'Failed to fetch messages.');
         } finally {
             dispatch(setMessagesLoading(false)); // Stop loading
         }
     };
 }
+
 
 // Async thunk to send a new message
 export function SendMessage(msgData) {
@@ -65,7 +74,7 @@ export function SendMessage(msgData) {
 
         try {
             const response = await axios.post(
-                `/messages/${selectedUser.user_id}`,
+                `user/messages/${selectedUser.user_id}`,
                 msgData,
                 {
                     headers: {

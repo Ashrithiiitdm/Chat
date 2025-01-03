@@ -131,6 +131,8 @@ export const getMessages = catchAsync(async (req, res, next) => {
     const { user_id: user1_id } = req.params;
     const { user_id: user2_id } = req.body;
 
+    console.log("In getMessages:", user1_id, user2_id);
+
     try {
         const messages = await pool.query(
             `
@@ -160,12 +162,12 @@ export const getMessages = catchAsync(async (req, res, next) => {
             `, [user1_id, user2_id]
         );
 
+        console.log(messages.rows);
+
         return res.status(200).json({
             status: 'success',
             message: 'Messages found',
-            data: {
-                messages: messages.rows,
-            },
+            messages: messages.rows,
         });
 
     }
