@@ -10,6 +10,7 @@ const initialState = {
     user_id: null,
     isLogged: false,
     isUpdatingProfile: false,
+    socket:null,
 
 }
 
