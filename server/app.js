@@ -1,26 +1,49 @@
-import express from "express";
-import dotenv from "dotenv";
-import cookieParser from "cookie-parser";
-import cors from "cors";
-import authRoutes from "./routes/auth.js";
-import userRoutes from "./routes/user.js";
-import { app, server } from "./socket.js";
+import express from 'express';
+import morgan from 'morgan';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
+import xss from 'xss-clean';
 
-dotenv.config();
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
-const PORT = process.env.PORT || 5000;
+import bodyParser from 'body-parser';
+import routes from './routes/index.js';
 
-app.use(express.json());
+
+// Create a new express application
+const app = express();
+
+//Using middlewares.
+app.use(
+    cors({
+        origin: '*',
+        methods: ['GET', 'PATCH', 'POST', 'PUT', 'DELETE'],
+        credentials: true,
+    })
+);
+
+app.use(express.json({ limit: '10kb' }));
 app.use(cookieParser());
-app.use(cors({
-    origin: process.env.CLIENT_URL,
-    credentials: true,
+app.use(bodyParser.json({}));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(helmet());
+app.use(morgan('dev'));
+
+//Setting limit for no of requests for protection.
+const limitter = rateLimit({
+    max: 3000,
+    windowMs: 60 * 60 * 1000,
+    message: 'Too many requests from this IP, please try again in an hour',
+})
+
+// app.use('/api', limitter);
+app.use(express.urlencoded({
+    extended: true
 }));
+app.use(xss());
 
-app.use('/auth', authRoutes);
-app.use('/user', userRoutes);
+app.use(routes)
 
-server.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
-
+//Export the express-application.
+export default app;
