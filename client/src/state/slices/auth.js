@@ -69,10 +69,10 @@ export function RegisterUser(formData, navigate) {
                 'Content-Type': 'application/json',
             }
         }).then(function (response) {
-            console.log(response);
+            console.log("res", response);
             toast.success(response.data.message);
         }).catch(function (err) {
-            console.log(err);
+            console.log("Auth", err);
             dispatch(setError(err));
 
             toast.error(err.response.data.message);

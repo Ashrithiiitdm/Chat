@@ -19,9 +19,11 @@ export default function MsgInbox() {
 
     const { messages, isMessagesLoading, selectedUser } = useSelector((state) => state.chats);
 
-    useEffect(() => {
-        dispatch(FetchMessages(selectedUser.user_id));
-    }, [dispatch, selectedUser.user_id]);
+    // console.log(selectedUser);
+
+    // useEffect(() => {
+    //     dispatch(FetchMessages(selectedUser.user_id));
+    // }, [dispatch, selectedUser.user_id]);
 
 
 
@@ -49,11 +51,11 @@ export default function MsgInbox() {
             dark:border-strokedark px-6 py-4.5'>
                     <div className='flex items-center' onClick={handleToggle}>
                         <div className="mr-4.5 h-13 w-full max-w-13 overflow-hidden rounded-full">
-                            <img src={selectedUser.avatar ?? User01} alt='Avatar' className='h-full w-full object-cover object-center'></img>
+                            <img src={selectedUser?.avatar ?? User01} alt='Avatar' className='h-full w-full object-cover object-center'></img>
                         </div>
                         <div>
                             <h5 className='font-medium text-black dark:text-white'>
-                                {selectedUser.user_name}
+                                {selectedUser?.user_name ?? 'User1'}
                             </h5>
                             <p className='text-sm'> Reply to message</p>
                         </div>

@@ -78,31 +78,40 @@ export const updateAvatar = catchAsync(async (req, res, next) => {
 
 //update password
 export const updatePassword = catchAsync(async (req, res, next) => {
-    //console.log(req.body);
-    const { currentPassword, newPassword } = req.body;
-    const { user_id } = req.body;
+    try{
+        //console.log(req.body);
+        const { currentPassword, newPassword } = req.body;
+        const { user_id } = req.body;
 
-    const result = await pool.query('SELECT user_pass FROM Users WHERE user_id = $1', [user_id]);
-    const user_Pass = result.rows[0].user_pass;
-    //console.log("Curr pass:", currentPassword);
-    //console.log("New pass:", newPassword);
-    if (!user_Pass || !(await bcrypt.compare(currentPassword, user_Pass))) {
-        return res.status(400).json({
-            status: 'fail',
-            message: 'Incorrect password',
+        const result = await pool.query('SELECT user_pass FROM Users WHERE user_id = $1', [user_id]);
+        const user_Pass = result.rows[0].user_pass;
+        //console.log("Curr pass:", currentPassword);
+        //console.log("New pass:", newPassword);
+        if (!user_Pass || !(await bcrypt.compare(currentPassword, user_Pass))) {
+            return res.status(400).json({
+                status: 'fail',
+                message: 'Incorrect password',
+            });
+        }
+
+        const hashedPass = await bcrypt.hash(newPassword, 12);
+        const passChangedAt = new Date();
+
+        await pool.query('UPDATE Users SET user_pass = $1, pass_changedAt = $2 WHERE user_id = $3', [hashedPass, passChangedAt, user_id]);
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Password updated successfully',
+
         });
     }
-
-    const hashedPass = await bcrypt.hash(newPassword, 12);
-    const passChangedAt = new Date();
-
-    await pool.query('UPDATE Users SET user_pass = $1,pass_changedAt = $2 WHERE user_id = $3', [hashedPass, passChangedAt, user_id]);
-
-    res.status(200).json({
-        status: 'success',
-        message: 'Password updated successfully',
-
-    });
+    catch(err){
+        console.log("Error in updatePassword:", err);
+        return res.status(400).json({
+            status: 'fail',
+            message: 'Error in updating password',
+        });
+    }
 
 });
 

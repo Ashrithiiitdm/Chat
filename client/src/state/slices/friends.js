@@ -51,7 +51,7 @@ export function FetchUsers() {
             console.log(response.data);
             dispatch(updateUsers({ users: response.data.data.users }));
         }).catch((err) => {
-            console.log(err);
+            console.log("Error:", err);
             setError(err);
             toast.error(err.response.message || 'Failed to fetch users.');
         });
@@ -67,12 +67,13 @@ export function FetchFriends() {
                 Authorization: `Bearer ${getState().auth.token}`,
             }
         }).then(function (response) {
+            console.log(response.data);
             console.log("In Fetchfriends:", response.data.data.friends);
             dispatch(updateFriends({ friends: response.data.data.friends }));
         }).catch(function (error) {
-            console.log(error);
+            console.log("In fetchfreidns", error);
             setError(error);
-            toast.error(error.response || 'Failed to fetch friends.');
+            toast.error(error || 'Failed to fetch friends.');
         });
     };
 }

@@ -281,7 +281,7 @@ export const auth = catchAsync(async (req, res, next) => {
 
     }
     catch (err) {
-        console.log(err);
+        console.log("Err:", err);
         console.log('Auth failed');
         return res.status(401).json({
             status: 'fail',

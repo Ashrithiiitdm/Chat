@@ -33,7 +33,7 @@ const chatsSlice = createSlice({
     },
 });
 
-export const { updateUsers, selectUser, updateMessages, setMessagesLoading } = chatsSlice.actions;
+export const { updateUsers, selectedUser, updateMessages, setMessagesLoading } = chatsSlice.actions;
 
 // Async thunk to fetch messages for a selected user
 export function FetchMessages() {
