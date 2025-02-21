@@ -8,49 +8,49 @@ const List = [
     {
         imgSrc: User01,
         name: "Ash",
-        message: "Manchidi raa",
+        message: "Hi how are you?",
     },
 
     {
         imgSrc: User01,
         name: "Ash",
-        message: "Manchidi raa",
+        message: "Hi how are you?",
     },
 
     {
         imgSrc: User01,
         name: "Ash",
-        message: "Manchidi raa",
+        message: "Hi how are you?",
     },
 
     {
         imgSrc: User01,
         name: "Ash",
-        message: "Manchidi raa",
+        message: "Hi how are you?",
     },
 
     {
         imgSrc: User01,
         name: "Ash",
-        message: "Manchidi raa",
+        message: "Hi how are you?",
     },
 
     {
         imgSrc: User01,
         name: "Ash",
-        message: "Manchidi raa",
+        message: "Hi how are you?",
     },
 
     {
         imgSrc: User01,
         name: "Ash",
-        message: "Manchidi raa",
+        message: "Hi how are you?",
     },
 
     {
         imgSrc: User01,
         name: "Ash",
-        message: "Manchidi raa",
+        message: "Hi how are you?",
     }
 
 ]

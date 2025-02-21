@@ -55,7 +55,7 @@ export default function MsgInbox() {
                         </div>
                         <div>
                             <h5 className='font-medium text-black dark:text-white'>
-                                {selectedUser?.user_name ?? 'User1'}
+                                {selectedUser?.user_name ?? 'Ash'}
                             </h5>
                             <p className='text-sm'> Reply to message</p>
                         </div>
@@ -77,21 +77,21 @@ export default function MsgInbox() {
                     <div className='max-w-100'>
                         <p className='mb-2.5 text-sm font-medium'>Ash</p>
                         <div className='mb-2.5 rounded-2xl rounded-tl-none bg-gray px-5 py-3 dark:bg-boxdark-2'>
-                            <p>Manchidi raww...</p>
+                            <p>Hi how are you?</p>
                         </div>
                         <p className='text-sm'>1:55pm</p>
                     </div>
 
                     <div className='max-w-100 ml-auto'>
                         <div className='mb-2.5 rounded-2xl rounded-br-none bg-primary px-5 py-3'>
-                            <p className='text-white'>Manchidi kAAdu rAA...</p>
+                            <p className='text-white'>Hi how are you?</p>
                         </div>
                         <p className='text-sm'>2:00pm</p>
                     </div>
                     <div className='max-w-100'>
                         <p className='mb-2.5 text-sm font-medium'>Ash</p>
                         <div className='mb-2.5 rounded-2xl rounded-tl-none bg-gray px-5 py-3 dark:bg-boxdark-2'>
-                            <p>Manchidi raww...</p>
+                            <p>Hi how are you?</p>
                         </div>
                         <p className='text-sm'>1:55pm</p>
                     </div>
@@ -100,14 +100,14 @@ export default function MsgInbox() {
                     <Audio incoming={false} src={Aud} status='delivered' time='4:32pm' />
                     <div className='max-w-100 ml-auto'>
                         <div className='mb-2.5 rounded-2xl rounded-br-none bg-primary px-5 py-3'>
-                            <p className='text-white'>Manchidi kAAdu rAA...</p>
+                            <p className='text-white'>Hi how are you?</p>
                         </div>
                         <p className='text-sm'>2:00pm</p>
                     </div>
                     <div className='max-w-100'>
                         <p className='mb-2.5 text-sm font-medium'>Ash</p>
                         <div className='mb-2.5 rounded-2xl rounded-tl-none bg-gray px-5 py-3 dark:bg-boxdark-2'>
-                            <p>Manchidi raww...</p>
+                            <p>Hi how are you?</p>
                         </div>
                         <p className='text-sm'>1:55pm</p>
                     </div>
@@ -115,21 +115,21 @@ export default function MsgInbox() {
                     <VideoImg writer="Ash" incoming={false} status='read' time='4:32pm' />
                     <div className='max-w-100 ml-auto'>
                         <div className='mb-2.5 rounded-2xl rounded-br-none bg-primary px-5 py-3'>
-                            <p className='text-white'>Manchidi kAAdu rAA...</p>
+                            <p className='text-white'>Hi how are you?</p>
                         </div>
                         <p className='text-sm'>2:00pm</p>
                     </div>
                     <div className='max-w-100'>
                         <p className='mb-2.5 text-sm font-medium'>Ash</p>
                         <div className='mb-2.5 rounded-2xl rounded-tl-none bg-gray px-5 py-3 dark:bg-boxdark-2'>
-                            <p>Manchidi raww...</p>
+                            <p>Hi how are you?</p>
                         </div>
                         <p className='text-sm'>1:55pm</p>
                     </div>
                     <Separator />
                     <div className='max-w-100 ml-auto'>
                         <div className='mb-2.5 rounded-2xl rounded-br-none bg-primary px-5 py-3'>
-                            <p className='text-white'>Manchidi kAAdu rAA...</p>
+                            <p className='text-white'>Hi how are you?</p>
                         </div>
                         <p className='text-sm'>2:00pm</p>
                     </div>
